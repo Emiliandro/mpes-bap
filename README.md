@@ -15,7 +15,6 @@ Mestrado Profissional em Engenharia de Software **BAP** Project.
 
 It remembers which directories you use most frequently, so you can "jump" to
 them in just a few keystrokes.<br />
-zoxide works on all major shells.
 
 [Getting started](#getting-started) •
 [Installation](#installation) •

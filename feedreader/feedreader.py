@@ -49,11 +49,11 @@ def check_url_array(key_from_dic, tag):
     request_fp_parte = fp.parse(url_from_dic)
     check_results(request_fp_parte,tag)
 
-def getOrganicResults():
+def get_organic_results():
   for key, value in references.items() :
     check_url_array(value, str(key))
 
   for msg in messages_generated:
       print(msg.toJson())
 
-getOrganicResults()
+get_organic_results()

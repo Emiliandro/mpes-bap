@@ -2,7 +2,11 @@ from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
-# File name
+# Using Flask due its dependencies with MarkupSafe and ItsDangerous
+# MarkupSafe comes with Jinja. It escapes untrusted input when rendering 
+# templates to avoid injection attacks.
+# ItsDangerous securely signs data to ensure its integrity. This is used
+# to protect Flask’s session cookie.
 app = Flask(__name__)
 
 # Database config

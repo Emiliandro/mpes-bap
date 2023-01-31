@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from utils.DBHelper import DBHelper
 
 # Using Flask due its dependencies with MarkupSafe and ItsDangerous
 # MarkupSafe comes with Jinja. It escapes untrusted input when rendering 
@@ -9,9 +10,19 @@ from datetime import datetime
 # to protect Flask’s session cookie.
 app = Flask(__name__)
 
+# Connecting RawDataBase
+db_helper = DBHelper()
+
 # Database config
+# TODO: organize non repudiation table
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///demo_messages.db'
 db = SQLAlchemy(app)
+
+# preventing sqlalchemy.exc.OperationalError: 
+# (sqlite3.OperationalError) no such table
+@app.before_first_request
+def create_tables():
+    db.create_all()
 
 
 class Demo(db.Model):
@@ -28,7 +39,6 @@ class Demo(db.Model):
 #  processed the information throw the field "Suas ultimas buscas".
 @app.route('/', methods=['POST', 'GET'])
 def index():
-
     if request.method == 'POST':
         task_content = request.form['content']
         new_task = Demo(content=task_content)

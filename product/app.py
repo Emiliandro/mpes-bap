@@ -1,8 +1,10 @@
 from flask import Flask, render_template, url_for, request, redirect
 from utils.RawImportsDB import RawImportsDB as riDB
+from utils.RawImportsDB import Raw
 from utils.NonRepudiationDB import NonRepudiationDB as nrDB
 from utils.NonRepudiationDB import Nonr
 from utils.CachedMessagesDB import CachedMessagesDB as cmDB
+from utils.FeedManager import get_if_contain, get_categories, RawMessage
 
 # Using Flask due its dependencies with MarkupSafe and ItsDangerous
 # MarkupSafe comes with Jinja. It escapes untrusted input when rendering 
@@ -22,6 +24,16 @@ cm_helper = cmDB()
 
 
 # DEMONSTRATION ----------------------------------
+
+list_results = []
+feed_categories = get_categories()
+for feed in feed_categories:
+    feed_results = get_if_contain(feed)
+    for result in feed_results:
+        value = Raw(categorie=result.tag,summary=result.summary,source=result.url)
+        list_results.append(value)
+
+ri_helper.appendList(list_results)
 
 raw_imports = ri_helper.getAll()
 non_repudiations = nr_helper.getAll()

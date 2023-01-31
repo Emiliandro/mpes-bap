@@ -33,7 +33,12 @@ class RawImportsDB:
     
     def appendList(self,values):
         for value in values:
-            self.session.add(value)
+            reference = self.session.query(Raw.source).filter(Raw.source==value.source)
+            exists = self.session.query(reference.exists()).scalar()
+            if exists == False:
+               self.session.add(value)
+            else:
+                print("tried to add something that is already in the database")
         self.session.commit()
 
     def remove(self,value):

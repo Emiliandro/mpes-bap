@@ -16,8 +16,6 @@ app = Flask(__name__)
 ri_helper = riDB()
 nr_helper = nrDB()
 
-ri_helper.demo()
-
 raw_imports = ri_helper.getAll()
 non_repudiations = nr_helper.getAll()
 

@@ -4,36 +4,55 @@
 {% block body %}
 <div class="content">
     <h1 style="text-align: center">{{title}}</h1>
-    {% if tasks|length < 1 %}
-    <h4 style="text-align: center">Nenhuma busca feita ainda! Digite o que deseja abaixo.</h4>
-    {% else %}
-    <h4>Suas últimas buscas</h4>
-    <button>Esconder buscas</button>
-    <table id="LastSearches">
-        <tr>
-            <th>Task</th>
-            <th>Added</th>
-            <th>Actions</th>
-        </tr>
-        {% for task in tasks %}
-            <tr>
-                <td>{{ task.content }}</td>
-                <td>{{ task.date_created.date() }}</td>
-                <td>
-                    <a href="/delete/{{task.id}}">Apagar</a>
-                    <br>
-                    <a >Repetir</a>
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
-    {% endif %}
 
-    <div id="demonstrationSearchForm" class="form">
+{% if tasks|length < 1 %}
+    <h4 style="text-align: center">Nenhuma busca feita ainda! Digite o que deseja abaixo.</h4>
+{% endif %}
+
+    <div id="demonstrative_form" class="form">
         <form action="/" method="POST">
             <input placeholder="Ola bap! Gostaria de saber mais sobre startups!" type="text" name="content" id="content">
             <input type="submit" value="Add Task">
         </form>
     </div>
 </div>
+
+<h4 >Last raw imports</h4>
+<table id="last_imports" style="width: 90%; margin-left: 5%;">
+    <tr>
+        <th>Data</th>
+        <th>Sumário</th>
+        <th>Categoria</th>
+        <th>Source</th>
+    </tr>
+{% for raw_import in raw_imports %}
+<tr>
+    <td>{{ raw_import.date_created.date() }} </td>
+    <td>{{ raw_import.summary }} </td>
+    <td>{{ raw_import.categorie }} </td>
+    <td>{{ raw_import.source }}  </td>
+</tr>
+{% endfor %}
+</table>
+
+<h4>Suas últimas buscas</h4>
+    <table id="last_searches"  style="width: 90%; margin-left: 5%;">
+        <tr>
+            <th style="width: 60%; " >Busca</th>
+            <th>Data</th>
+            <th>Actions</th>
+        </tr>
+        {% for task in non_repudiations %}
+            <tr>
+                <td style="width: 60%; " >{{ task.summary }}</td>
+                <td>{{ task.date_created.date() }}</td>
+                <td>
+                    <!--<a href="/delete/{{task.id}}">Apagar</a>
+                    <br>-->
+                    <a >Repetir</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
 {% endblock %}

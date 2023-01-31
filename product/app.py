@@ -4,6 +4,7 @@ from datetime import datetime
 from utils.RawImportsDB import RawImportsDB as riDB
 from utils.NonRepudiationDB import NonRepudiationDB as nrDB
 from utils.NonRepudiationDB import Nonr
+from utils.CachedMessagesDB import CachedMessagesDB as cmDB
 
 # Using Flask due its dependencies with MarkupSafe and ItsDangerous
 # MarkupSafe comes with Jinja. It escapes untrusted input when rendering 
@@ -12,16 +13,17 @@ from utils.NonRepudiationDB import Nonr
 # to protect Flask’s session cookie.
 app = Flask(__name__)
 
-# Connecting Raw Imports Database
+# Raw Imports DB contain every message filtered by the Webscrapping and the Feedreader
 ri_helper = riDB()
+
+# Non Repudiation DB contain the history of requests made be the api
 nr_helper = nrDB()
+
+# Cached Messages DB contain all messages approved to be sent by the api
+cm_helper = cmDB()
 
 raw_imports = ri_helper.getAll()
 non_repudiations = nr_helper.getAll()
-
-
-print(raw_imports)
-print(non_repudiations)
 
 #  regarding cyber security non repudiation, this assures that the sender of
 #  information is provided with proof of delivery and the recipient is provided

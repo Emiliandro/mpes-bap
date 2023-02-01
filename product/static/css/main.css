@@ -1,0 +1,41 @@
+/**
+ * The container and the item are both
+ * into flex layout. To align items
+ * to each other.
+ */
+.suggestions-list,
+ .suggestions-list li{
+    display: flex;
+	padding: 0;
+	margin: 0;
+}
+
+/**
+ * Force to occupy the space available
+ * and allow item being on several lines
+ */
+.suggestions-list {
+	width: 100%;
+	list-style: none;
+	flex-wrap: wrap;
+}
+
+/**
+ * Items tend to occupy 25% of
+ * the available width but are
+ * allow to grow.
+ */
+.suggestions-list li {
+	flex-basis: 25%;
+	flex-shrink: 0;
+	flex-grow: 1;
+}
+
+/**
+ * Some decorations for the 
+ * next lines.
+ */
+ .suggestions-list li button {
+	margin-left: 5%;
+    width: 90%;
+ }

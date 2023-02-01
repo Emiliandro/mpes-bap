@@ -2,18 +2,19 @@
 
 
 {% block body %}
-<div class="content">
+<div class="content" style="padding-bottom: 100px;">
     <h1 style="text-align: center">{{title}}</h1>
 
     <div class="tab row" style="margin-bottom: 50px;">
-    <button class="tablinks four columns" onclick="openTab(event, 'tab-search')">Search</button>
-    <button class="tablinks four columns" onclick="openTab(event, 'tab-rawi')">Raw Imports</button>
-    <button class="tablinks four columns" onclick="openTab(event, 'tab-nonr')">Last searches</button>
+    <button class="tablinks three columns" onclick="openTab(event, 'tab-search')">Search</button>
+    <button class="tablinks three columns" onclick="openTab(event, 'tab-rawi')">From Feed</button>
+    <button class="tablinks three columns" onclick="openTab(event, 'tab-nonr')">Last searches</button>
+    <button class="tablinks three columns" onclick="openTab(event, 'tab-suggestions')">Sugestions</button>
     </div>
 
     <div id="tab-search" class="tabcontent">
 
-        {% if non_repudiations|length < 1 %}
+    {% if non_repudiations|length < 1 %}
         <h4 style="text-align: center">Nenhuma busca feita ainda! Digite o que deseja abaixo.</h4>
     {% endif %}
 
@@ -26,13 +27,14 @@
     </div>
 
     <div id="tab-rawi" class="tabcontent" style="display: none;">
-        <h4 >Last raw imports</h4>
+        <h4 >Last feed imports</h4>
         <table id="last_imports" style="width: 90%; margin-left: 5%;">
             <tr>
                 <th>Data</th>
                 <th>Sumário</th>
                 <th>Categoria</th>
                 <th>Source</th>
+                <th>Action</th>
             </tr>
         {% for raw_import in raw_imports %}
         <tr>
@@ -40,13 +42,30 @@
             <td>{{ raw_import.summary }} </td>
             <td>{{ raw_import.categorie }} </td>
             <td>{{ raw_import.source }}  </td>
+            <td> <a>Buscar</a></td>
         </tr>
         {% endfor %}
         </table>
     </div>
+    
+    <div id="tab-suggestions" class="tabcontent"  style="display: none;">
+        <ul class="suggestions-list">
+            {% for suggestion in suggestions %}
+            <li><button>{{ suggestion }}</button></li>
+            {% endfor %}
+        </ul>
+    
+        </div>
 
     <div id="tab-nonr" class="tabcontent" style="display: none;">
         <h4>Suas últimas buscas</h4>
+
+
+    {% if non_repudiations|length < 1 %}
+        <h4 style="text-align: center">Nenhuma busca feita ainda.</h4>
+    {% endif %}
+
+
         <table id="last_searches"  style="width: 90%; margin-left: 5%;">
             <tr>
                 <th style="width: 60%; " >Busca</th>

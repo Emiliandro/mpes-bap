@@ -5,6 +5,7 @@ from utils.NonRepudiationDB import NonRepudiationDB as nrDB
 from utils.NonRepudiationDB import Nonr
 from utils.CachedMessagesDB import CachedMessagesDB as cmDB
 from utils.FeedManager import get_if_contain, get_categories, RawMessage
+from duckduckgo_search import ddg_suggestions, ddg
 
 # Using Flask due its dependencies with MarkupSafe and ItsDangerous
 # MarkupSafe comes with Jinja. It escapes untrusted input when rendering 
@@ -25,6 +26,7 @@ cm_helper = cmDB()
 
 # DEMONSTRATION ----------------------------------
 
+list_suggestions = []
 list_results = []
 feed_categories = get_categories()
 for feed in feed_categories:
@@ -32,6 +34,14 @@ for feed in feed_categories:
     for result in feed_results:
         value = Raw(categorie=result.tag,summary=result.summary,source=result.url)
         list_results.append(value)
+
+# using duckduckgo_search, because DuckDuckGo does not collect or share personal
+# information. That its privacy policy, it prevents search leakage by default.  
+# read more about it at https://duckduckgo.com/privacy
+for feed in feed_categories:
+    results = ddg_suggestions(feed,region='pt-br')
+    for result in results:    
+        list_suggestions.append(result['phrase'])
 
 ri_helper.appendList(list_results)
 
@@ -51,7 +61,7 @@ def index():
         non_repudiations = nr_helper.getAll()
 
     title = "Bem vindo ao Bap 🤖"
-    return render_template('demonstration.html',title=title, non_repudiations=non_repudiations,raw_imports=raw_imports)
+    return render_template('demonstration.html',title=title, non_repudiations=non_repudiations,raw_imports=raw_imports,suggestions=list_suggestions)
 
 def do_update_nonR(request):
     task_content = request.form['content']
@@ -90,7 +100,19 @@ def get_categorie_cached_messages():
         { 'summary' : 'bye', 'source':'https://google.com' }]
     return remove_later
 
-# MISC ---------------------------------------------
+# SEARCH_ENGINE -----------------
+
+# using duckduckgo_search, because DuckDuckGo does not collect or share personal
+# information. That its privacy policy, it prevents search leakage by default.  
+# read more about it at https://duckduckgo.com/privacy
+
+def phrase_to_search(value):
+    phrase_to_results = ddg(value, region='pt-br', safesearch='on', time='y')
+    print(phrase_to_results)
+
+phrase_to_search("Vai viajar? Confira orientações da PRF para prevenir acidentes nas estradas")
+
+# MISC -----------------
 
 if (__name__ == "__main__"):
     app.run(debug=True)

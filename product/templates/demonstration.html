@@ -95,9 +95,7 @@
                     <td style="width: 60%; " >{{ task.summary }}</td>
                     <td>{{ task.date_created.date() }}</td>
                     <td>
-                        <!--<a href="/delete/{{task.id}}">Apagar</a>
-                        <br>-->
-                        <a >Repetir</a>
+                        <a href="/phrase/{{task.summary}}">Repetir</a>
                     </td>
                 </tr>
             {% endfor %}

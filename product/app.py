@@ -6,6 +6,9 @@ from utils.NonRepudiationDB import Nonr
 from utils.CachedMessagesDB import CachedMessagesDB as cmDB
 from utils.FeedManager import get_if_contain, get_categories, RawMessage
 from duckduckgo_search import ddg_suggestions, ddg
+from markupsafe import escape
+
+title = "Bem vindo ao Bap 🤖"
 
 # Using Flask due its dependencies with MarkupSafe and ItsDangerous
 # MarkupSafe comes with Jinja. It escapes untrusted input when rendering 
@@ -55,17 +58,15 @@ non_repudiations = nr_helper.getAll()
 @app.route('/', methods=['POST', 'GET'])
 def index():
     if request.method == 'POST':
-        return do_update_nonR(request)
+        return do_update_nonR(request.form['content'])
     else:
         raw_imports = ri_helper.getAll()
         non_repudiations = nr_helper.getAll()
 
-    title = "Bem vindo ao Bap 🤖"
-    return render_template('demonstration.html',title=title, non_repudiations=non_repudiations,raw_imports=raw_imports,suggestions=list_suggestions)
+    return render_template('demonstration.html',title=title, non_repudiations=non_repudiations,raw_imports=raw_imports,suggestions=list_suggestions,phrases=[])
 
-def do_update_nonR(request):
-    task_content = request.form['content']
-    new_nr = Nonr(summary=task_content)
+def do_update_nonR(research):
+    new_nr = Nonr(summary=research)
     try:
         nr_helper.append(new_nr)
         return redirect('/')
@@ -108,9 +109,15 @@ def get_categorie_cached_messages():
 
 def phrase_to_search(value):
     phrase_to_results = ddg(value, region='pt-br', safesearch='on', time='y')
-    print(phrase_to_results)
+    return phrase_to_results
 
-phrase_to_search("Vai viajar? Confira orientações da PRF para prevenir acidentes nas estradas")
+@app.route('/phrase/<phrase>')
+def search_for(phrase):
+    do_update_nonR(phrase)
+    raw_imports = ri_helper.getAll()
+    non_repudiations = nr_helper.getAll()
+    phrases = phrase_to_search(phrase)
+    return render_template('demonstration.html',title=title, non_repudiations=non_repudiations,raw_imports=raw_imports,suggestions=list_suggestions,phrases=phrases)
 
 # MISC -----------------
 

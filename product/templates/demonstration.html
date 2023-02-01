@@ -24,6 +24,24 @@
                 <input class=" three columns" type="submit" value="Add Task">
             </form>
         </div>
+
+        <div id="desmonstrative_results">
+            <table id="last_imports" style="width: 90%; margin-left: 5%;">
+                <tr>
+                    <th>Titulo</th>
+                    <th>Sumário</th>
+                    <th>Source</th>
+                </tr>
+            {% for phrase in phrases %}
+            <tr>
+                <td>{{ phrase['title'] }}</td>
+                <td>{{ phrase['body'] }}</td>
+                <td>{{ phrase['href'] }}</td>
+            </tr>
+            {% endfor %}
+            </table>
+        </div>
+
     </div>
 
     <div id="tab-rawi" class="tabcontent" style="display: none;">
@@ -42,7 +60,7 @@
             <td>{{ raw_import.summary }} </td>
             <td>{{ raw_import.categorie }} </td>
             <td>{{ raw_import.source }}  </td>
-            <td> <a>Buscar</a></td>
+            <td> <a href="/phrase/{{raw_import.summary}}" >Buscar</a></td>
         </tr>
         {% endfor %}
         </table>
@@ -51,7 +69,7 @@
     <div id="tab-suggestions" class="tabcontent"  style="display: none;">
         <ul class="suggestions-list">
             {% for suggestion in suggestions %}
-            <li><button>{{ suggestion }}</button></li>
+            <li><button><a href="/phrase/{{suggestion}}" >{{ suggestion }}</a></button></li>
             {% endfor %}
         </ul>
     

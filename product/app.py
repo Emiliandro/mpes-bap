@@ -1,12 +1,25 @@
+# Using Flask due its dependencies with MarkupSafe and ItsDangerous
+# MarkupSafe comes with Jinja. It escapes untrusted input when rendering 
+# templates to avoid injection attacks.
+# ItsDangerous securely signs data to ensure its integrity. This is used
+# to protect Flask’s session cookie.
 from flask import Flask, render_template, url_for, request, redirect
+
+# escape function causes param to be rendered as text, preventing the execution of 
+# injection script in the user’s browser or the in the api request.
+from markupsafe import escape
+
+# using duckduckgo_search, because DuckDuckGo does not collect or share personal
+# information. That its privacy policy, it prevents search leakage by default.  
+# read more about it at https://duckduckgo.com/privacy
+from duckduckgo_search import ddg_suggestions, ddg
+
 from utils.RawImportsDB import RawImportsDB as riDB
 from utils.RawImportsDB import Raw
 from utils.NonRepudiationDB import NonRepudiationDB as nrDB
 from utils.NonRepudiationDB import Nonr
 from utils.CachedMessagesDB import CachedMessagesDB as cmDB
 from utils.FeedManager import get_if_contain, get_categories, RawMessage
-from duckduckgo_search import ddg_suggestions, ddg
-from markupsafe import escape
 
 title = "Bem vindo ao Bap 🤖"
 
@@ -113,10 +126,15 @@ def phrase_to_search(value):
 
 @app.route('/phrase/<phrase>')
 def search_for(phrase):
-    do_update_nonR(phrase)
+    # escape function causes param to be rendered as text, preventing the execution of 
+    # injection script in the user’s browser or the in the api request.
+    do_update_nonR(f"{escape(phrase)}")
     raw_imports = ri_helper.getAll()
     non_repudiations = nr_helper.getAll()
-    phrases = phrase_to_search(phrase)
+
+    # escape function causes param to be rendered as text, preventing the execution of 
+    # injection script in the user’s browser or the in the api request.
+    phrases = phrase_to_search(f"{escape(phrase)}")
     return render_template('demonstration.html',title=title, non_repudiations=non_repudiations,raw_imports=raw_imports,suggestions=list_suggestions,phrases=phrases)
 
 # MISC -----------------

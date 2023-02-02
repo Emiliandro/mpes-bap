@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine, Column, String, Integer, DateTime, Identity
 from sqlalchemy.orm import sessionmaker, declarative_base
 from datetime import datetime
+import json
 
 Base = declarative_base()
 
@@ -23,8 +24,11 @@ class Raw(Base):
         self.source = source
         self.summary = summary
 
+    def toJson(self): 
+        return json.dumps(self, default=lambda o: o.__dict__)
+
     def __repr__(self):
-        return f"({self.rid}) {self.categorie}, {self.source} - {self.summary}"
+        return f"{ {self.categorie}, {self.source}, {self.summary} }"
 
 class RawImportsDB:
     def append(self,value):
@@ -37,8 +41,6 @@ class RawImportsDB:
             exists = self.session.query(reference.exists()).scalar()
             if exists == False:
                self.session.add(value)
-            else:
-                print("tried to add something that is already in the database")
         self.session.commit()
 
     def remove(self,value):

@@ -5,13 +5,12 @@
 <div class="content" style="padding-bottom: 100px;">
     <h1 style="text-align: center">{{title}}</h1>
 
-    <div class="tab row" style="margin-bottom: 50px;">
-    <button class="tablinks three columns" onclick="openTab(event, 'tab-search')">Search</button>
-    <button class="tablinks three columns" onclick="openTab(event, 'tab-rawi')">From Feed</button>
-    <button class="tablinks three columns" onclick="openTab(event, 'tab-nonr')">Last searches</button>
-    <button class="tablinks three columns" onclick="openTab(event, 'tab-suggestions')">Sugestions</button>
+    <div class="tab row">
+        <button class="tablinks three columns" onclick="openTab(event, 'tab-search')">Buscas</button>
+        <button class="tablinks three columns" onclick="openTab(event, 'tab-rawi')">Do feed</button>
+        <button class="tablinks three columns" onclick="openTab(event, 'tab-nonr')">Últimas buscas</button>
+        <button class="tablinks three columns" onclick="openTab(event, 'tab-suggestions')">Sugestões de temas</button>
     </div>
-
     <div id="tab-search" class="tabcontent">
 
     {% if non_repudiations|length < 1 %}
@@ -19,10 +18,10 @@
     {% endif %}
 
         <div id="demonstrative_form" class="form row">
-            <form action="/" method="POST">
+            <!--<form action="/" method="POST">
                 <input class="nine columns" placeholder="Ola bap! Gostaria de saber mais sobre startups!" type="text" name="content" id="content">
-                <input class=" three columns" type="submit" value="Add Task">
-            </form>
+                <input class="three columns" type="submit" value="Add Task">
+            </form>--->
         </div>
 
         <div id="desmonstrative_results">
@@ -31,12 +30,14 @@
                     <th>Titulo</th>
                     <th>Sumário</th>
                     <th>Source</th>
+                    <th>Ações</th>
                 </tr>
             {% for phrase in phrases %}
             <tr>
                 <td>{{ phrase['title'] }}</td>
                 <td>{{ phrase['body'] }}</td>
                 <td>{{ phrase['href'] }}</td>
+                <td><a href="/phrase/{{phrase['title']}}" >Mais</a></td>
             </tr>
             {% endfor %}
             </table>

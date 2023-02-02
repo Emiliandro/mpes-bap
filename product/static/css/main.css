@@ -39,3 +39,7 @@
 	margin-left: 5%;
     width: 90%;
  }
+
+ button a {
+	text-decoration: none
+ }

@@ -121,7 +121,7 @@ def get_categorie_cached_messages():
 # read more about it at https://duckduckgo.com/privacy
 
 def phrase_to_search(value):
-    phrase_to_results = ddg(value, region='pt-br', safesearch='on', time='y')
+    phrase_to_results = ddg(value, region='br-pt', safesearch='on', time='y')
     return phrase_to_results
 
 @app.route('/phrase/<phrase>')

@@ -55,7 +55,7 @@ for feed in feed_categories:
 # information. That its privacy policy, it prevents search leakage by default.  
 # read more about it at https://duckduckgo.com/privacy
 for feed in feed_categories:
-    results = ddg_suggestions(feed,region='pt-br')
+    results = ddg_suggestions(feed,region='br-pt')
     for result in results:    
         list_suggestions.append(result['phrase'])
 

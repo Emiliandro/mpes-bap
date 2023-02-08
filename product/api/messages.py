@@ -1,31 +1,36 @@
 from flask import Blueprint
-# Using Flask due its dependencies with MarkupSafe and ItsDangerous
-# MarkupSafe comes with Jinja. It escapes untrusted input when rendering 
-# templates to avoid injection attacks.
-# ItsDangerous securely signs data to ensure its integrity. This is used
-# to protect Flask’s session cookie.
-from flask import Flask, render_template, url_for, request, redirect
+from flask import request
+from api.model.basic_request import BasicRequest
+
+import inspect
 
 api = Blueprint('messages',__name__,url_prefix='/messages')
 
-@api.route('/fetch_categories', methods=['POST'])
+# check if values are valide for request
+def basic_request_validations(basic_request):
+    is_br = isinstance(basic_request,BasicRequest)
+    return is_br
+
+# check if token is valid, this is TBD
+def token_validation(token):
+    if isinstance(token,str) == False:
+        return False
+    return True
+
+@api.route('/fetch', methods=['POST'])
 def fetch_categories():
     if request.method == 'POST':
         msg = request.json
+        
         user_token = msg['token']
         msg_categ = msg['categorie']
         start_date = msg['start_date']
         end_date = msg['end_date']
 
-        print(f"user wants {request.json}")
+        basic_request = BasicRequest(token=user_token,categorie=msg_categ,start_time=start_date,end_time=end_date)
+        
+        if (basic_request_validations(basic_request)):
+            print(f"user wants {basic_request}")
     
-    remove_later = [
-        { 'summary' : 'hello', 'source':'https://google.com' },
-        { 'summary' : 'this', 'source':'https://google.com' },
-        { 'summary' : 'is in', 'source':'https://google.com' },
-        { 'summary' : 'to-do', 'source':'https://google.com' },
-        { 'summary' : 'for the', 'source':'https://google.com' },
-        { 'summary' : 'categories,', 'source':'https://google.com' },
-        { 'summary' : 'bye', 'source':'https://google.com' }]
-    return remove_later
-
+    # default response: nothin was found
+    return {}

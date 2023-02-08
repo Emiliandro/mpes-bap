@@ -20,6 +20,7 @@ from utils.RawImportsDB import Raw
 from utils.NonRepudiationDB import NonRepudiationDB as nrDB
 from utils.NonRepudiationDB import Nonr
 from utils.CachedMessagesDB import CachedMessagesDB as cmDB
+from utils.CachedMessagesDB import Cachedm
 from utils.FeedManager import get_if_contain, get_categories, RawMessage
 
 title = "Bem vindo ao Bap 🤖"
@@ -95,6 +96,10 @@ def do_update_nonR(research):
 
 def phrase_to_search(value):
     phrase_to_results = ddg(value, region='br-pt', safesearch='on', time='y')
+
+    for phrase in phrase_to_results:
+        cached_msg = Cachedm(body=phrase['body'],title=phrase['title'],source=phrase['href'],categorie="none")
+
     return phrase_to_results
 
 @app.route('/phrase/<phrase>')

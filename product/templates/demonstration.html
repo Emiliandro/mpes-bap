@@ -37,7 +37,7 @@
                 <td>{{ phrase['title'] }}</td>
                 <td>{{ phrase['body'] }}</td>
                 <td>{{ phrase['href'] }}</td>
-                <td><a href="/phrase/{{phrase['title']}}" >Mais</a></td>
+                <td><a href="/demo/phrase/{{phrase['title']}}" >Mais</a></td>
             </tr>
             {% endfor %}
             </table>
@@ -61,7 +61,7 @@
             <td>{{ raw_import.summary }} </td>
             <td>{{ raw_import.categorie }} </td>
             <td>{{ raw_import.source }}  </td>
-            <td> <a href="/phrase/{{raw_import.summary}}" >Buscar</a></td>
+            <td> <a href="/demo/phrase/{{raw_import.summary}}" >Buscar</a></td>
         </tr>
         {% endfor %}
         </table>
@@ -70,7 +70,7 @@
     <div id="tab-suggestions" class="tabcontent"  style="display: none;">
         <ul class="suggestions-list">
             {% for suggestion in suggestions %}
-            <li><button><a href="/phrase/{{suggestion}}" >{{ suggestion }}</a></button></li>
+            <li><button><a href="/demo/phrase/{{suggestion}}" >{{ suggestion }}</a></button></li>
             {% endfor %}
         </ul>
     
@@ -96,7 +96,7 @@
                     <td style="width: 60%; " >{{ task.summary }}</td>
                     <td>{{ task.date_created.date() }}</td>
                     <td>
-                        <a href="/phrase/{{task.summary}}">Repetir</a>
+                        <a href="/demo/phrase/{{task.summary}}">Repetir</a>
                     </td>
                 </tr>
             {% endfor %}

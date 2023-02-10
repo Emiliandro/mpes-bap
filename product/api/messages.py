@@ -20,11 +20,7 @@ def token_validation(token):
         return False
     return True
 
-def get_all():
-    return cm_helper.getAll()
-
 def create_request_model(msg):
-
     user_token = escape(msg['token'])
     msg_categ = escape(msg['categorie'])
     start_date = escape(msg['start_date'])
@@ -32,22 +28,6 @@ def create_request_model(msg):
 
     return BasicRequest(token=user_token,categorie=msg_categ,start_time=start_date,end_time=end_date)
         
-
-@api.route('/fetch', methods=['POST'])
-def fetch_categories():
-    if request.method == 'POST':
-        msg = request.json
-        basic_request = create_request_model(msg=msg)
-        
-        if basic_request_validations(basic_request):
-            print(f"user wants {basic_request}")
-            
-            if basic_request.categorie == "all":
-                return get_all()
-    
-    # default response: nothin was found
-    return {}
-
 db = SQLAlchemy(api)
 
 class NewsBulletin(db.Model):
@@ -60,13 +40,31 @@ class NewsBulletin(db.Model):
 
 db.create_all()
 
-@api.route('/newsbreak', methods=['GET'])
+@api.route('/newsbreak', methods=['POST'])
 def get_newsbreak():
+    if request.method != 'POST':
+        return {}
+    
+    msg = request.json
+    basic_request = create_request_model(msg=msg)
+
+    if basic_request_validations(basic_request) == False:
+        return {}
+
     bulletin = NewsBulletin.query.all()
     return jsonify([newsbreak.__repr__() for newsbreak in bulletin])
 
-@api.route('/newsbreak/<int:newsbreak_id>', methods=['GET'])
+@api.route('/newsbreak/<int:newsbreak_id>', methods=['POST'])
 def get_newsbreak(newsbreak_id):
+    if request.method != 'POST':
+        return {}
+    
+    msg = request.json
+    basic_request = create_request_model(msg=msg)
+
+    if basic_request_validations(basic_request) == False:
+        return {}
+    
     bulletin = NewsBulletin.query.get(newsbreak_id)
     if bulletin is None:
         return jsonify({'message': 'newsbreak not found'})
@@ -74,6 +72,15 @@ def get_newsbreak(newsbreak_id):
 
 @api.route('/newsbreak', methods=['POST'])
 def create_newsbreak():
+    if request.method != 'POST':
+        return {}
+    
+    msg = request.json
+    basic_request = create_request_model(msg=msg)
+
+    if basic_request_validations(basic_request) == False:
+        return {}
+    
     message = request.json['message']
     source = request.json['source']
     bulletin = NewsBulletin(message=message, source=source)
@@ -83,6 +90,15 @@ def create_newsbreak():
 
 @api.route('/newsbreak/<int:newsbreak_id>', methods=['PUT'])
 def update_newsbreak(newsbreak_id):
+    if request.method != 'POST':
+        return {}
+    
+    msg = request.json
+    basic_request = create_request_model(msg=msg)
+
+    if basic_request_validations(basic_request) == False:
+        return {}
+    
     bulletin = NewsBulletin.query.get(newsbreak_id)
     if bulletin is None:
         return jsonify({'message': 'newsbreak not found'})
@@ -93,6 +109,15 @@ def update_newsbreak(newsbreak_id):
 
 @api.route('/newsbreak/<int:newsbreak_id>', methods=['DELETE'])
 def delete_newsbreak(newsbreak_id):
+    if request.method != 'POST':
+        return {}
+    
+    msg = request.json
+    basic_request = create_request_model(msg=msg)
+
+    if basic_request_validations(basic_request) == False:
+        return {}
+
     bulletin = NewsBulletin.query.get(newsbreak_id)
     if bulletin is None:
         return jsonify({'message': 'newsbreak not found'})

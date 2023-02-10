@@ -1,5 +1,5 @@
-from flask import Blueprint
-from flask import request
+from flask import Blueprint, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
 from markupsafe import escape
 from api.model.basic_request import BasicRequest
 from utils.CachedMessagesDB import CachedMessagesDB as cmDB
@@ -47,3 +47,55 @@ def fetch_categories():
     
     # default response: nothin was found
     return {}
+
+db = SQLAlchemy(api)
+
+class NewsBulletin(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String(100), nullable=False)
+    source = db.Column(db.String(100), unique=True, nullable=False)
+
+    def __repr__(self):
+        return f'<newsbreak {self.id}: {self.message} ({self.source})>'
+
+db.create_all()
+
+@api.route('/newsbreak', methods=['GET'])
+def get_newsbreak():
+    bulletin = NewsBulletin.query.all()
+    return jsonify([newsbreak.__repr__() for newsbreak in bulletin])
+
+@api.route('/newsbreak/<int:newsbreak_id>', methods=['GET'])
+def get_newsbreak(newsbreak_id):
+    bulletin = NewsBulletin.query.get(newsbreak_id)
+    if bulletin is None:
+        return jsonify({'message': 'newsbreak not found'})
+    return jsonify(bulletin.__repr__())
+
+@api.route('/newsbreak', methods=['POST'])
+def create_newsbreak():
+    message = request.json['message']
+    source = request.json['source']
+    bulletin = NewsBulletin(message=message, source=source)
+    db.session.add(bulletin)
+    db.session.commit()
+    return jsonify(bulletin.__repr__()), 201
+
+@api.route('/newsbreak/<int:newsbreak_id>', methods=['PUT'])
+def update_newsbreak(newsbreak_id):
+    bulletin = NewsBulletin.query.get(newsbreak_id)
+    if bulletin is None:
+        return jsonify({'message': 'newsbreak not found'})
+    bulletin.message = request.json.get('message', bulletin.message)
+    bulletin.source = request.json.get('source', bulletin.source)
+    db.session.commit()
+    return jsonify(bulletin.__repr__())
+
+@api.route('/newsbreak/<int:newsbreak_id>', methods=['DELETE'])
+def delete_newsbreak(newsbreak_id):
+    bulletin = NewsBulletin.query.get(newsbreak_id)
+    if bulletin is None:
+        return jsonify({'message': 'newsbreak not found'})
+    db.session.delete(bulletin)
+    db.session.commit()
+    return jsonify({'message': 'newsbreak deleted'})

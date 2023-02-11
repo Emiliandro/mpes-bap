@@ -4,6 +4,7 @@ from datetime import date as datetime_date
 from markupsafe import escape
 from demonstration import app as demonstration
 from BulletinDB import BulletinDB
+from ResearchesDB import ResearchesDB
 
 def create_app():
     app = Flask(__name__)
@@ -12,6 +13,7 @@ def create_app():
 
 app = create_app()
 bulletin_helper = BulletinDB()
+researches_helper = ResearchesDB()
 
 def default_answer():
     return jsonify({'message': 'one or more parameters are incorrect'})
@@ -96,6 +98,7 @@ def list_categorie():
     if formatted_request_validations(formatted_request) == False:
         return default_answer()
     
+    researches = researches_helper.append(formatted_request)
     bulletin = bulletin_helper.getCategorie(formatted_request['categorie'])
     if bulletin is None:
         return jsonify({'message': 'categorie not found'})

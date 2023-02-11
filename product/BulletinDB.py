@@ -23,12 +23,12 @@ class NewsBulletin(Base):
         self.categorie = categorie
 
     def __repr__(self):
-        return f'<newsbreak {self.title}: {self.message} ({self.source})>'
+        return f'({self.title}): {self.message} ({self.source})'
 
 
 class BulletinDB:
     def __init__(self):
-        engine = create_engine("sqlite:///bulletin.db",echo=False)
+        engine = create_engine("sqlite:///bulletin.db",echo=True)
         Base.metadata.create_all(bind=engine)
 
         Session = sessionmaker(bind=engine)

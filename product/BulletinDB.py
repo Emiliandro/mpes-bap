@@ -72,4 +72,4 @@ class BulletinDB:
         return self.session.query(NewsBulletin).filter(NewsBulletin.categorie==categorie).all()
     
     def getCategories(self, categories):
-        return self.session.query(NewsBulletin).options(load_only=categories).all()
+        return self.session.query(NewsBulletin).filter(NewsBulletin.categorie.in__(categories)).all()

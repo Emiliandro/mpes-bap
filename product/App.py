@@ -14,7 +14,7 @@ app = create_app()
 bulletin_helper = BulletinDB()
 
 def default_answer():
-    return jsonify({})
+    return jsonify({'message': 'one or more parameters are incorrect'})
 
 def is_list_of_strings(lst):
     if lst and isinstance(lst, list):
@@ -86,7 +86,7 @@ def create_request_news(msg):
     }
 
 @app.route('/bap/categorie', methods=['POST'])
-def get_categorie():
+def list_categorie():
     if request.method != 'POST':
         return default_answer()
     
@@ -102,7 +102,7 @@ def get_categorie():
     return jsonify(bulletin.__repr__())
 
 @app.route('/bap/categories', methods=['POST'])
-def get_categories():
+def list_categories():
     if request.method != 'POST':
         return default_answer()
     
@@ -118,8 +118,8 @@ def get_categories():
     return jsonify(bulletin.__repr__())
 
 
-@app.route('/bap/fetch', methods=['POST'])
-def fetch_all():
+@app.route('/bap/list_all', methods=['POST'])
+def list_all():
     if request.method != 'POST':
         return default_answer()
     
@@ -131,8 +131,8 @@ def fetch_all():
 
     return bulletin_helper.getAll()
 
-@app.route('/bap/add', methods=['POST'])
-def add():
+@app.route('/bap/create', methods=['POST'])
+def create():
     if request.method != 'POST':
         return default_answer()
     
@@ -144,8 +144,8 @@ def add():
     
     return bulletin_helper.createAndAppend(formatted_request=formatted_request)
 
-@app.route('/bap/remove', methods=['POST'])
-def remove():
+@app.route('/bap/delete', methods=['POST'])
+def delete():
     if request.method != 'POST':
         return default_answer()
     
@@ -156,8 +156,6 @@ def remove():
         return default_answer()
 
     return bulletin_helper.remove(value=formatted_request['source'])
-
-    # return jsonify({'message': 'newsbreak deleted'})
 
 if (__name__ == "__main__"):
     app.run(debug=True)

@@ -1,3 +1,4 @@
+from flask import Blueprint
 # Using Flask due its dependencies with MarkupSafe and ItsDangerous
 # MarkupSafe comes with Jinja. It escapes untrusted input when rendering 
 # templates to avoid injection attacks.
@@ -19,6 +20,7 @@ from utils.RawImportsDB import Raw
 from utils.NonRepudiationDB import NonRepudiationDB as nrDB
 from utils.NonRepudiationDB import Nonr
 from utils.CachedMessagesDB import CachedMessagesDB as cmDB
+from utils.CachedMessagesDB import Cachedm
 from utils.FeedManager import get_if_contain, get_categories, RawMessage
 
 title = "Bem vindo ao Bap 🤖"
@@ -28,7 +30,7 @@ title = "Bem vindo ao Bap 🤖"
 # templates to avoid injection attacks.
 # ItsDangerous securely signs data to ensure its integrity. This is used
 # to protect Flask’s session cookie.
-app = Flask(__name__)
+app = Blueprint('demonstration',__name__,url_prefix='/demo')
 
 # Raw Imports DB contain every message filtered by the Webscrapping and the Feedreader
 ri_helper = riDB()
@@ -55,7 +57,7 @@ for feed in feed_categories:
 # information. That its privacy policy, it prevents search leakage by default.  
 # read more about it at https://duckduckgo.com/privacy
 for feed in feed_categories:
-    results = ddg_suggestions(feed,region='pt-br')
+    results = ddg_suggestions(feed,region='br-pt')
     for result in results:    
         list_suggestions.append(result['phrase'])
 
@@ -86,34 +88,6 @@ def do_update_nonR(research):
     except:
         return 'error adding value'
 
-# REST API for Cached Messages ---------------------
-@app.route('/get_cached', methods=['GET'])
-def get_all_cached_messages():
-    remove_later = [
-        { 'summary' : 'hello', 'source':'https://google.com' },
-        { 'summary' : 'this', 'source':'https://google.com' },
-        { 'summary' : 'is in', 'source':'https://google.com' },
-        { 'summary' : 'to-do,', 'source':'https://google.com' },
-        { 'summary' : 'bye', 'source':'https://google.com' }]
-    return remove_later
-
-
-@app.route('/get_categorie', methods=['POST', 'GET'])
-def get_categorie_cached_messages():
-    if request.method == 'POST':
-        interest = request.form['content']
-        print(f"user wants {interest}")
-    
-    remove_later = [
-        { 'summary' : 'hello', 'source':'https://google.com' },
-        { 'summary' : 'this', 'source':'https://google.com' },
-        { 'summary' : 'is in', 'source':'https://google.com' },
-        { 'summary' : 'to-do', 'source':'https://google.com' },
-        { 'summary' : 'for the', 'source':'https://google.com' },
-        { 'summary' : 'categories,', 'source':'https://google.com' },
-        { 'summary' : 'bye', 'source':'https://google.com' }]
-    return remove_later
-
 # SEARCH_ENGINE -----------------
 
 # using duckduckgo_search, because DuckDuckGo does not collect or share personal
@@ -122,6 +96,10 @@ def get_categorie_cached_messages():
 
 def phrase_to_search(value):
     phrase_to_results = ddg(value, region='br-pt', safesearch='on', time='y')
+
+    for phrase in phrase_to_results:
+        cached_msg = Cachedm(body=phrase['body'],title=phrase['title'],source=phrase['href'],categorie="none")
+
     return phrase_to_results
 
 @app.route('/phrase/<phrase>')
@@ -136,8 +114,3 @@ def search_for(phrase):
     # injection script in the user’s browser or the in the api request.
     phrases = phrase_to_search(f"{escape(phrase)}")
     return render_template('demonstration.html',title=title, non_repudiations=non_repudiations,raw_imports=raw_imports,suggestions=list_suggestions,phrases=phrases)
-
-# MISC -----------------
-
-if (__name__ == "__main__"):
-    app.run(debug=True)

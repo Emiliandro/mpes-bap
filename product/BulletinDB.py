@@ -16,11 +16,10 @@ class NewsBulletin(Base):
     date_created = Column("datetime",DateTime(timezone=True), default=datetime.utcnow)
 
     def __init__(self, categorie, title, message, source, date_created):
-        # self.id = id
         self.title = title
         self.message = message
         self.source = source
-        self.date_created = datetime.strptime(date_created, '%m-%d-%Y').date()
+        self.date_created = date_created
         self.categorie = categorie
 
     def __repr__(self):

@@ -2,7 +2,7 @@ from flask import Flask, Blueprint, request, jsonify
 from datetime import datetime
 from markupsafe import escape
 from demonstration import app as demonstration
-from BulletinDB import BulletinDB, NewsBulletin
+from BulletinDB import BulletinDB
 
 def create_app():
     app = Flask(__name__)
@@ -16,7 +16,24 @@ def default_answer():
     return jsonify({})
 
 def formatted_request_validations(formatted_request):
-#    is_br = isinstance(formatted_request,BasicRequest)
+    if isinstance(formatted_request['categorie'],str) == False:
+        return False
+
+    if "date_created" in formatted_request:
+        if isinstance(formatted_request['date_created'],datetime) == False:
+            return False
+        if isinstance(formatted_request['title'],str) == False:
+            return False
+        if isinstance(formatted_request['message'],str) == False:
+            return False
+        if isinstance(formatted_request['source'],str) == False:
+            return False
+    else:
+        if isinstance(formatted_request['start_date'],datetime) == False:
+            return False
+        if isinstance(formatted_request['end_date'],datetime) == False:
+            return False
+
     return True
 
 def token_validation(token):
@@ -28,8 +45,8 @@ def create_request_model(msg):
     return {
         'token':escape(msg['token']),
         'categorie':escape(msg['categorie']),
-        'start_time':escape(msg['start_date']),
-        'end_time':escape(msg['end_date'])
+        'start_time':datetime.strptime(escape(msg['start_date']), '%m-%d-%Y').date(),
+        'end_time':datetime.strptime(escape(msg['end_date']), '%m-%d-%Y').date()
     }
 
 def create_request_news(msg):
@@ -39,7 +56,7 @@ def create_request_news(msg):
         'message':escape(msg['message']),
         'categorie':escape(msg['categorie']).lower(),
         'source':escape(msg['source']),
-        'date_created':escape(msg['date_created'])
+        'date_created':datetime.strptime(escape(msg['date_created']), '%m-%d-%Y').date()
     }
 
 @app.route('/bap/categorie', methods=['POST'])
@@ -85,9 +102,8 @@ def create_newsbreak():
     
     return bulletin_helper.createAndAppend(formatted_request=formatted_request)
 
-
-@app.route('/bap/<url>', methods=['POST'])
-def delete_newsbreak(newsbreak_id):
+@app.route('/bap/remove', methods=['POST'])
+def delete_newsbreak():
     if request.method != 'POST':
         return default_answer()
     

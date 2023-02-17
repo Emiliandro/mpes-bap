@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
-from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from flask_swagger_ui import get_swaggerui_blueprint
+from datetime import datetime
 import copy
 
 # Fernet is a symmetric encryption algorithm and one of the recommended 
@@ -22,6 +23,7 @@ import copy
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
+date_format = "%Y-%m-%d %H:%M:%S"
 app = Flask(__name__)
 limiter = Limiter(app, key_func=get_remote_address)
 
@@ -52,6 +54,8 @@ class Message(db.Model):
     name = db.Column(db.String(50))
     description = db.Column(db.String(255))
     source = db.Column(db.String)
+    category = db.Column(db.String)
+    published_at = Column(DateTime, default=datetime.utcnow)
 
 # following the Single Responsibility Principle (SRP) by
 # encapsulating the database operations into a separate class.
@@ -69,11 +73,16 @@ class MessageService:
             raise ValueError("Message not found")
         return self._message_to_dict(message)
 
-    def create_message(self, name, description, source):
+    def get_message_between_dates(self,from_date,to_date):
+        messages = Message.query.filter(Message.published_at.between(from_date, to_date)).all()
+        return [self._message_to_dict(message) for message in messages]
+
+    def create_message(self, name, description, source, date_string):
         message = self.prototype.clone()
         message.name = name
         message.description = description
         message.source = source
+        message.published_at = datetime.strptime(date_string, date_format)
         db.session.add(message)
         db.session.commit()
         return self._message_to_dict(message)
@@ -97,7 +106,7 @@ class MessageService:
         return {'message': 'Message deleted successfully'}
 
     def _message_to_dict(self, message):
-        return {'id': message.id, 'name': message.name, 'description': message.description, 'source': message.source}
+        return {'id': message.id, 'name': message.name, 'description': message.description, 'source': message.source, 'published_at': message.published_at}
 
 # The Decorator pattern is a structural design pattern that allows behavior
 # to be added to an individual object, either statically or dynamically, 
@@ -118,6 +127,12 @@ class MessageDecorator:
 
     def get_all_messages(self):
         messages = self._message_service.get_all_messages()
+        for message in messages:
+            message['source'] = '${:,.2f}'.format(message['source'])
+        return messages
+
+    def get_all_messages_between_dates(self,from_date,to_date):
+        messages = self._message_service.get_message_between_dates(from_date=from_date,to_date=to_date)
         for message in messages:
             message['source'] = '${:,.2f}'.format(message['source'])
         return messages
@@ -189,6 +204,7 @@ def update_message(message_id):
     name = request.json['name']
     description = request.json['description']
     source = request.json['source']
+    message.published_at = request.json['published_at']
     message = message_service.update_message(message_id, name, description, source)
     return jsonify(message)
 

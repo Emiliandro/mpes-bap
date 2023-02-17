@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from flask_swagger_ui import get_swaggerui_blueprint
 from datetime import datetime
+from broker import Broker
 import copy
 
 # Fernet is a symmetric encryption algorithm and one of the recommended 
@@ -25,6 +26,7 @@ from flask_limiter.util import get_remote_address
 
 date_format = "%Y-%m-%d %H:%M:%S"
 app = Flask(__name__)
+broker = Broker()
 limiter = Limiter(app, key_func=get_remote_address)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///example.db'
@@ -193,11 +195,9 @@ def get_message(message_id):
 
 @app.route('/messages', methods=['POST'])
 def add_message():
-    name = request.json['name']
-    description = request.json['description']
-    source = request.json['source']
-    message = message_service.create_message(name, description, source)
-    return jsonify(message)
+    broker.publish('message.create', request)
+    return f"Message {request.json['source']} updated"
+    #return jsonify(message)
 
 @app.route('/messages/<int:message_id>', methods=['PUT'])
 def update_message(message_id):
@@ -206,12 +206,42 @@ def update_message(message_id):
     source = request.json['source']
     message.published_at = request.json['published_at']
     message = message_service.update_message(message_id, name, description, source)
-    return jsonify(message)
+    return f"Message {request.json['source']} updated"
 
 @app.route('/messages/<int:message_id>', methods=['DELETE'])
 def delete_message(message_id):
-    response = message_service.delete_message(message_id)
-    return jsonify(response)
+    broker.publish('message.update', request)
+    return f"Message {request.json['source']} deleted"
 
+# --------------------
+# Define the event handlers for the broker
+# To be used by the scheduler to update the main database
+@broker.handler('message.create')
+def handle_create_message(request):
+    name = request.json['name']
+    description = request.json['description']
+    message.published_at = request.json['published_at']
+    source = request.json['source']
+    message = message_service.create_message(name, description, source)
+    # Add message to database or other storage
+    pass
+
+@broker.handler('message.get')
+def handle_get_message(id):
+    # Retrieve message from database or other storage
+    pass
+
+@broker.handler('message.update')
+def handle_update_message(book):
+    # Update message in database or other storage
+    pass
+
+@broker.handler('message.delete')
+def handle_delete_message(message_id):
+    response = message_service.delete_message(message_id)
+    # Delete message from database or other storage
+    pass
+
+# ---------------------
 if __name__ == '__main__':
     app.run(debug=True)

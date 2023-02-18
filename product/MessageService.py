@@ -1,7 +1,27 @@
 from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.orm import sessionmaker, declarative_base, load_only
-from MessagePrototype import MessagePrototype
 from datetime import datetime
+import copy
+
+# Fernet is a symmetric encryption algorithm and one of the recommended 
+# encryption methods provided by the cryptography library in Python. 
+# Fernet encryption uses a 128-bit AES (Advanced Encryption Standard) key 
+# and also provides key rotation and message authentication. It is a 
+# high-level interface for symmetric encryption that makes it easy to 
+# encrypt and decrypt data. Fernet encryption is useful in scenarios 
+# where you want to store sensitive data, such as passwords or personal 
+# information, in a database or send it over the internet. Fernet ensures 
+# that the data is kept confidential by encrypting it, and also guarantees 
+# the integrity of the data by verifying that it has not been tampered 
+# with during transmission.
+# from cryptography.fernet import Fernet
+
+# Initialize encryption key
+# key = Fernet.generate_key()
+# fernet = Fernet(key)
+# Usage example 
+# encrypted_password = fernet.encrypt(data['password'].encode())
+# user = User(username=data['username'], password=encrypted_password.decode())
 
 Base = declarative_base()
 date_format = "%Y-%m-%d" #"%Y-%m-%d %H:%M:%S"
@@ -14,12 +34,30 @@ class Message(Base):
     category = Column(String)
     published_at = Column(DateTime, default=datetime.utcnow)
 
+    # The Prototype pattern is a creational design pattern that allows an object 
+    # to create duplicate objects or clones of itself, without depending on specific classes.
+
+    # The pattern involves creating a prototype object that serves as a template for 
+    # creating other objects. When a new object is needed, a clone of the prototype is 
+    # created and modified as needed. This approach allows the creation of new objects 
+    # with minimal overhead, and it allows objects to be created dynamically at runtime, 
+    # without requiring a specific class to be known in advance.
+
+    # The Prototype pattern is useful in situations where creating an object is expensive 
+    # or complex, and where there are many variations of a similar object. By using a prototype,
+    # you can easily create new objects by cloning an existing one and modifying its properties 
+    # as needed, which can save time and resources.
+
+    # Additionally, the Prototype pattern can promote encapsulation and reduce coupling by 
+    # separating the client code from the object creation process.
+    def clone(self):
+        return copy.deepcopy(self)
 
 # following the Single Responsibility Principle (SRP) by
 # encapsulating the database operations into a separate class.
 class MessageService:
     def __init__(self):
-        self.prototype = MessagePrototype() 
+        self.prototype = Message() 
         engine = create_engine("sqlite:///made_messages.db",echo=True)
         Base.metadata.create_all(bind=engine)
         Session = sessionmaker(bind=engine)

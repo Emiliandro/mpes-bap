@@ -1,21 +1,5 @@
 from flask import Flask, jsonify, request
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from flask_swagger_ui import get_swaggerui_blueprint
-from datetime import datetime
-
-# Fernet is a symmetric encryption algorithm and one of the recommended 
-# encryption methods provided by the cryptography library in Python. 
-# Fernet encryption uses a 128-bit AES (Advanced Encryption Standard) key 
-# and also provides key rotation and message authentication. It is a 
-# high-level interface for symmetric encryption that makes it easy to 
-# encrypt and decrypt data. Fernet encryption is useful in scenarios 
-# where you want to store sensitive data, such as passwords or personal 
-# information, in a database or send it over the internet. Fernet ensures 
-# that the data is kept confidential by encrypting it, and also guarantees 
-# the integrity of the data by verifying that it has not been tampered 
-# with during transmission.
-# from cryptography.fernet import Fernet
 
 # escape function causes param to be rendered as text, preventing the execution of 
 # injection script in the user’s browser or the in the api request.
@@ -24,15 +8,12 @@ from markupsafe import escape
 # Flask-Limiter or Flask-RateLimiter. These libraries provide 
 # easy-to-use decorators that can be used to limit the number 
 # of requests made to certain endpoints in your application.
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+from flask_limiter import Limiter #from flask_limiter.util import get_remote_address
 from MessageDecorator import MessageDecorator
 from MessageService import MessageService
 
 app = Flask(__name__)
 limiter = Limiter(app)
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bulletin.db'
-#db = SQLAlchemy(app)
 
 SWAGGER_URL = '/api/docs'
 API_URL = '/static/swagger.json'
@@ -44,14 +25,6 @@ swaggerui_blueprint = get_swaggerui_blueprint(
     }
 )
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
-
-# Initialize encryption key
-# key = Fernet.generate_key()
-# fernet = Fernet(key)
-# Usage example 
-# encrypted_password = fernet.encrypt(data['password'].encode())
-# user = User(username=data['username'], password=encrypted_password.decode())
-    
 message_service = MessageService()
 message_service = MessageDecorator(message_service)
 

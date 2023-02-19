@@ -7,8 +7,6 @@ from duckduckgo_search import ddg_suggestions, ddg
 # injection script in the user’s browser or the in the api request.
 from markupsafe import escape
 
-list_suggestions = []
-
 # using duckduckgo_search, because DuckDuckGo does not collect or share personal
 # information. That its privacy policy, it prevents search leakage by default.  
 # read more about it at https://duckduckgo.com/privacy
@@ -16,6 +14,40 @@ list_suggestions = []
 #    results = ddg_suggestions(feed, region='br-pt')
 #    for result in results:    
 #        print("\"",result['phrase'],"\",")
+
+class BapDDG():
+    def phrase_to_search(self,value):
+        self.phrase_to_results = ddg(value, region='br-pt', safesearch='on', time='y', max_results=5)
+        self.list_suggestions = []
+
+        for phrase in self.phrase_to_results:
+            new_phrase = { 
+                    "description":phrase['body'],
+                    "title":phrase['title'],
+                    "source":phrase['href'],
+                    "categorie":"none" }
+
+            self.list_suggestions.append(new_phrase)
+
+    def __init__(self,debugMode=False,export=False):
+        if (debugMode):
+            for i in test_subjects_for_research():
+                self.phrase_to_search(value=i)
+        else:
+            print("Debug Mode is offline")
+
+        if (export):
+            # total time 14 minutes
+            with open("bap_ddg_results.txt", "w") as f:
+                for row in self.list_suggestions:
+                    for key, value in row.items():
+                        f.write("{}; ".format(value))
+                    f.write("\n")
+        else:
+            print("Export is disable")
+
+something = BapDDG()
+
 def test_subjects_for_research():
     return [" autoesporte ",
 " autoesporte g1 ",
@@ -724,25 +756,3 @@ def test_subjects_for_research():
 " turismo sustentável definição ",
 " turismo sustentável definição omt ",
 " turismo sustentável açores "]
-
-def phrase_to_search(value):
-    phrase_to_results = ddg(value, region='br-pt', safesearch='on', time='y', max_results=5)
-
-    for phrase in phrase_to_results:
-        new_phrase = { 
-                "description":phrase['body'],
-                "title":phrase['title'],
-                "source":phrase['href'],
-                "categorie":"none" }
-
-        list_suggestions.append(new_phrase)
-
-for i in test_subjects_for_research():
-    phrase_to_search(i)
-
-# total time 14 minutes
-with open("bap_ddg_results.txt", "w") as f:
-    for row in list_suggestions:
-        for key, value in row.items():
-            f.write("{}; ".format(value))
-        f.write("\n")

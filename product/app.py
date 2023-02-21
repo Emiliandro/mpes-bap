@@ -79,7 +79,6 @@ def scrapperJob():
 
 schedule.every().day.at("13:00").do(scrapperJob)
 
-
 # ---------------------
 if __name__ == '__main__':
     app.run(debug=True)

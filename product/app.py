@@ -11,6 +11,7 @@ from markupsafe import escape
 from flask_limiter import Limiter #from flask_limiter.util import get_remote_address
 from MessageDecorator import MessageDecorator
 from MessageService import MessageService
+from bap_main import BapMain
 
 app = Flask(__name__)
 limiter = Limiter(app)
@@ -64,6 +65,10 @@ def update_message(message_id):
 def delete_message(message_id):
     response = message_service.delete_message(message_id)
     return f"Message {request.json['source']} deleted"
+
+# ---------------------
+webscrapper = BapMain()
+print(webscrapper.getMessages())
 
 # ---------------------
 if __name__ == '__main__':

@@ -47,7 +47,7 @@ class BapMain():
         self.webscrapper = BapDDG(today_str)
         self.current_dictionaries = []
         
+    def getMessages(self):
         self.createTodayFile()
         self.today_files = self.getAndValidateTodayFiles(create_file=True)
-
-start = BapMain()
+        return self.today_files

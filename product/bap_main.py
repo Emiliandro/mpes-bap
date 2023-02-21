@@ -37,7 +37,7 @@ class BapMain():
 
         if(create_file):
             with open("validated_"+self.file_name, "wb") as f:
-                pickle.dump(self.list_suggestions, f, protocol=pickle.HIGHEST_PROTOCOL)
+                pickle.dump(remove_nonpt_descriptions_dictionaries, f, protocol=pickle.HIGHEST_PROTOCOL)
 
         return remove_nonpt_descriptions_dictionaries
             

@@ -77,6 +77,21 @@ class MessageService:
         messages = Message.query.filter(Message.published_at.between(from_date, to_date)).all()
         return [self._message_to_dict(message) for message in messages]
 
+    def create_messages(self,messages):
+        for msg in messages:
+            message = self.prototype.clone()
+            message.title = msg['title']
+            message.description = msg['description']
+            message.source = msg['source']
+            message.category = msg['category']
+            #try:
+            #    message.published_at = datetime.strptime(msg.date_string, date_format)
+            #except:
+            #    return { "error": "Invalid datetime}" }
+            self.session.add(message)
+        self.session.commit()
+        return {'response':'added'}
+
     def create_message(self, title, description, source, category, date_string):
         message = self.prototype.clone()
         message.title = title

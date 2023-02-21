@@ -35,7 +35,7 @@ app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 message_service = MessageService()
 message_service = MessageDecorator(message_service)
 
-@app.route('/api/messages', methods=['GET'])
+@app.route('/get_messages', methods=['GET'])
 @limiter.limit("5 per minute")
 def get_all_messages():
     messages = message_service.get_all_messages()
@@ -79,8 +79,11 @@ webscrapper_time = "13:15"
 def scrapperJob():
     with app.app_context():
         print("Script is running at ",webscrapper_time)
-        print(webscrapper.getMessages())
+        messages = webscrapper.getMessages()
+        print("in total were fetched:",len(messages),"messages in this time.")
         time.sleep(5)
+        upload = message_service.create_messages(messages)
+        print(upload)
 
 def start_scheduler():
     # Schedule the task to run every day at 13:00

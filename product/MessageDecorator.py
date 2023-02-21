@@ -35,6 +35,9 @@ class MessageDecorator:
 
     def create_message(self, title, description, source, category, published_at):
         return self._message_service.create_message(title, description, source, category, published_at)
+    
+    def create_messages(self,messages):
+        return self._message_service.create_messages(messages)
 
     def update_message(self, message_id, title, description, source, category, published_at):
         return self._message_service.update_message(message_id, title, description, source, category, published_at)

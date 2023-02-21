@@ -22,7 +22,7 @@ class BapDDG():
                     "description":phrase['body'],
                     "title":phrase['title'],
                     "source":phrase['href'],
-                    "categorie":"none" }
+                    "category":"none" }
 
             self.list_suggestions.append(new_phrase)
 
@@ -31,7 +31,7 @@ class BapDDG():
         self.file_name = "" + today + ".txt"
 
     def makeTxtFile(self):
-        for i in [" autoesporte "," autoesporte g1 "," tecnologia da informação tempo de curso "," memória social e memória coletiva "," quais as tecnologias utilizadas em memórias "," revista de memoria social "," economia de energia do pc "," economia de energia monitor "," economia de água e energia elétrica "," economia de energia com energia solar "," opções de economia de energia "," economia criativa no brasil "," turismo sustentável açores "]:
+        for i in [" autoesporte "]: #," autoesporte g1 "," tecnologia da informação tempo de curso "," memória social e memória coletiva "," quais as tecnologias utilizadas em memórias "," revista de memoria social "," economia de energia do pc "," economia de energia monitor "," economia de água e energia elétrica "," economia de energia com energia solar "," opções de economia de energia "," economia criativa no brasil "," turismo sustentável açores "]:
             self.searchPhrase(value=i)
         # total time 14 minutes
         

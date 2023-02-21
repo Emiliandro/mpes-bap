@@ -14,7 +14,7 @@ from markupsafe import escape
 #        print("\"",result['phrase'],"\",")
 
 class BapDDG():
-    def phrase_to_search(self,value):
+    def searchPhrase(self,value):
         self.phrase_to_results = ddg(value, region='br-pt', safesearch='on', time='y', max_results=5)
 
         for phrase in self.phrase_to_results:
@@ -26,20 +26,14 @@ class BapDDG():
 
             self.list_suggestions.append(new_phrase)
 
-    def __init__(self,debugMode=False,export=False):
+    def __init__(self,today):
         self.list_suggestions = []
+        self.file_name = "" + today + ".txt"
 
-        if (debugMode):
-            for i in [" autoesporte "," autoesporte g1 "," tecnologia da informação tempo de curso "," memória social e memória coletiva "," quais as tecnologias utilizadas em memórias "," revista de memoria social "," economia de energia do pc "," economia de energia monitor "," economia de água e energia elétrica "," economia de energia com energia solar "," opções de economia de energia "," economia criativa no brasil "," turismo sustentável açores "]:
-                self.phrase_to_search(value=i)
-        else:
-            print("Debug Mode is offline")
-
-        if (export):
-            # total time 14 minutes
-            with open("bap_ddg_resultss.txt", "wb") as f:
-                pickle.dump(self.list_suggestions, f, protocol=pickle.HIGHEST_PROTOCOL)
-        else:
-            print("Export is disable")
-
-something = BapDDG(True,True)
+    def makeTxtFile(self):
+        for i in [" autoesporte "," autoesporte g1 "," tecnologia da informação tempo de curso "," memória social e memória coletiva "," quais as tecnologias utilizadas em memórias "," revista de memoria social "," economia de energia do pc "," economia de energia monitor "," economia de água e energia elétrica "," economia de energia com energia solar "," opções de economia de energia "," economia criativa no brasil "," turismo sustentável açores "]:
+            self.searchPhrase(value=i)
+        # total time 14 minutes
+        
+        with open(self.file_name, "wb") as f:
+            pickle.dump(self.list_suggestions, f, protocol=pickle.HIGHEST_PROTOCOL)

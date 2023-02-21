@@ -1,3 +1,4 @@
+import pickle
 # using duckduckgo_search, because DuckDuckGo does not collect or share personal
 # information. That its privacy policy, it prevents search leakage by default.  
 # read more about it at https://duckduckgo.com/privacy
@@ -7,9 +8,6 @@ from duckduckgo_search import ddg_suggestions, ddg
 # injection script in the user’s browser or the in the api request.
 from markupsafe import escape
 
-# using duckduckgo_search, because DuckDuckGo does not collect or share personal
-# information. That its privacy policy, it prevents search leakage by default.  
-# read more about it at https://duckduckgo.com/privacy
 #for feed in feed_categories:
 #    results = ddg_suggestions(feed, region='br-pt')
 #    for result in results:    
@@ -39,14 +37,8 @@ class BapDDG():
 
         if (export):
             # total time 14 minutes
-            with open("bap_ddg_resultss.txt", "w") as f:
-                for row in self.list_suggestions:
-                    print("writting",row)
-                    f.write(str(row))
-                    # for key, value in row.items():
-                        #print("writting",value)
-                        #f.write(value)
-                    f.write("\n")
+            with open("bap_ddg_resultss.txt", "wb") as f:
+                pickle.dump(self.list_suggestions, f, protocol=pickle.HIGHEST_PROTOCOL)
         else:
             print("Export is disable")
 

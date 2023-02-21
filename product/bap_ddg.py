@@ -15,7 +15,7 @@ from markupsafe import escape
 
 class BapDDG():
     def searchPhrase(self,value):
-        self.phrase_to_results = ddg(value, region='br-pt', safesearch='on', time='y', max_results=5)
+        self.phrase_to_results = ddg(value, region='br-pt', safesearch='on', time='y', max_results=9)
 
         for phrase in self.phrase_to_results:
             new_phrase = { 

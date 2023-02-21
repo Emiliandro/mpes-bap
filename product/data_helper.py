@@ -6,7 +6,8 @@ class DataHelper(object):
         for phrase in messages:
             if detect(phrase["description"]) == "pt":
                 filtered_dictionaries.append(phrase)
-            return filtered_dictionaries
+            
+        return filtered_dictionaries
 
     def removeMinDescription(self,messages):
         return [d for d in messages if len(d.get("description", "")) >= 50]

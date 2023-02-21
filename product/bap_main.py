@@ -24,16 +24,16 @@ class BapMain():
     
     def getAndValidateTodayFiles(self,create_file=False):
         self.getTodayFile()
-        print ("alpaca",len(self.current_dictionaries))
+        print ("initial size of scrapping",len(self.current_dictionaries))
 
         remove_duplicates_current_dictionaries = self.valdation.removeDuplicates(self.current_dictionaries)
-        print ("alpaca",len(remove_duplicates_current_dictionaries))
+        print ("removing duplicated",len(remove_duplicates_current_dictionaries))
 
         remove_min_description_dictionaries = self.valdation.removeMinDescription(remove_duplicates_current_dictionaries)
-        print ("alpaca",len(remove_min_description_dictionaries))
+        print ("remove with low characters",len(remove_min_description_dictionaries))
 
-        remove_nonpt_descriptions_dictionaries = self.valdation.removeMinDescription(remove_min_description_dictionaries)
-        print ("alpaca",len(remove_nonpt_descriptions_dictionaries))
+        remove_nonpt_descriptions_dictionaries = self.valdation.removeNotPortuguese(remove_min_description_dictionaries)
+        print ("removing non portuguese",len(remove_nonpt_descriptions_dictionaries))
 
         if(create_file):
             with open("validated_"+self.file_name, "wb") as f:

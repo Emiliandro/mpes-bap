@@ -13,6 +13,8 @@ from MessageDecorator import MessageDecorator
 from MessageService import MessageService
 from bap_main import BapMain
 
+
+from multiprocessing import Process
 # schedule module in Python to schedule a script to run once a day at a specific time. 
 import schedule
 import time
@@ -72,14 +74,33 @@ def delete_message(message_id):
 
 # ---------------------
 webscrapper = BapMain()
+webscrapper_time = "13:15"
 
 def scrapperJob():
-    print("Script is running at 13:00")
-    print(webscrapper.getMessages())
+    with app.app_context():
+        print("Script is running at ",webscrapper_time)
+        print(webscrapper.getMessages())
+        time.sleep(5)
 
-schedule.every().day.at("13:00").do(scrapperJob)
+def start_scheduler():
+    # Schedule the task to run every day at 13:00
+    schedule.every().day.at(webscrapper_time).do(scrapperJob)
+    #schedule.every(1).minutes.do(scrapperJob)
+
+    # Keep the scheduled tasks running in the background
+    while True:
+        schedule.run_pending()
+        time.sleep(15)
 
 # ---------------------
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Start the scheduler in a separate process
+    scheduler = Process(target=start_scheduler)
+    scheduler.start()
+
+    # Start the Flask web server
+    app.run(debug=False, use_reloader=False)
+
+    # Terminate the scheduler process when the Flask app is stopped
+    scheduler.terminate()
     

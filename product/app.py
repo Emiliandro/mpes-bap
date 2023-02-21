@@ -13,6 +13,10 @@ from MessageDecorator import MessageDecorator
 from MessageService import MessageService
 from bap_main import BapMain
 
+# schedule module in Python to schedule a script to run once a day at a specific time. 
+import schedule
+import time
+
 app = Flask(__name__)
 limiter = Limiter(app)
 
@@ -68,8 +72,15 @@ def delete_message(message_id):
 
 # ---------------------
 webscrapper = BapMain()
-print(webscrapper.getMessages())
+
+def scrapperJob():
+    print("Script is running at 13:00")
+    print(webscrapper.getMessages())
+
+schedule.every().day.at("13:00").do(scrapperJob)
+
 
 # ---------------------
 if __name__ == '__main__':
     app.run(debug=True)
+    

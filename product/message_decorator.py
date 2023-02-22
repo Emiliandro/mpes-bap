@@ -17,24 +17,22 @@ class MessageDecorator:
         self._message_service = message_service
 
     def get_all_messages(self):
-        messages = self._message_service.get_all_messages()
-        for message in messages:
-            message['source'] = '${:,.2f}'.format(message['source'])
-        return messages
+        return self._message_service.get_all_messages()
 
     def get_all_messages_between_dates(self,from_date,to_date):
-        messages = self._message_service.get_message_between_dates(from_date=from_date,to_date=to_date)
-        for message in messages:
-            message['source'] = '${:,.2f}'.format(message['source'])
-        return messages
+        return self._message_service.get_message_between_dates(from_date=from_date,to_date=to_date)
+
+    def get_message_by_category(self, category):
+        return self._message_service.get_message_by_category(category)
 
     def get_message_by_id(self, message_id):
-        message = self._message_service.get_message_by_id(message_id)
-        message['source'] = '${:,.2f}'.format(message['source'])
-        return message
+        return self._message_service.get_message_by_id(message_id)
 
     def create_message(self, title, description, source, category, published_at):
         return self._message_service.create_message(title, description, source, category, published_at)
+    
+    def create_messages(self,messages):
+        return self._message_service.create_messages(messages)
 
     def update_message(self, message_id, title, description, source, category, published_at):
         return self._message_service.update_message(message_id, title, description, source, category, published_at)

@@ -8,9 +8,16 @@ from markupsafe import escape
 # Flask-Limiter or Flask-RateLimiter. These libraries provide 
 # easy-to-use decorators that can be used to limit the number 
 # of requests made to certain endpoints in your application.
-from flask_limiter import Limiter #from flask_limiter.util import get_remote_address
-from MessageDecorator import MessageDecorator
-from MessageService import MessageService
+from flask_limiter import Limiter
+from multiprocessing import Process
+
+from message_decorator import MessageDecorator
+from message_service import MessageService
+from bap_main import BapMain
+
+# schedule module in Python to schedule a script to run once a day at a specific time. 
+import schedule
+import time
 
 app = Flask(__name__)
 limiter = Limiter(app)
@@ -28,16 +35,22 @@ app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 message_service = MessageService()
 message_service = MessageDecorator(message_service)
 
-@app.route('/api/messages', methods=['GET'])
+@app.route('/get_all', methods=['GET'])
 @limiter.limit("5 per minute")
-def get_all_messages():
+def get_all():
     messages = message_service.get_all_messages()
     return jsonify(messages)
 
-@app.route('/messages/<int:message_id>', methods=['GET'])
-@limiter.limit("5 per minute")
-def get_message(message_id):
-    message = message_service.get_message_by_id(message_id)
+@app.route('/by_id', methods=['POST'])
+def get_by_id():
+    message_id = escape(request.json['message_id'])
+    message = message_service.get_message_by_id(message_id=message_id)
+    return jsonify(message)
+
+@app.route('/by_category', methods=['POST'])
+def get_by_category():
+    category = escape(request.json['category'])
+    message = message_service.get_message_by_category(category=category)
     return jsonify(message)
 
 @app.route('/messages', methods=['POST'])
@@ -66,5 +79,38 @@ def delete_message(message_id):
     return f"Message {request.json['source']} deleted"
 
 # ---------------------
+webscrapper = BapMain()
+webscrapper_time = "13:00"
+
+def scrapperJob():
+    with app.app_context():
+        print("Script is running at ",webscrapper_time)
+        messages = webscrapper.getMessages()
+        print("in total were fetched:",len(messages),"messages in this time.")
+        time.sleep(5)
+        upload = message_service.create_messages(messages)
+        print(upload)
+
+def start_scheduler():
+    # Schedule the task to run every day at 13:00
+    #schedule.every().day.at(webscrapper_time).do(scrapperJob)
+    #schedule.every(7).minutes.do(scrapperJob)
+    schedule.every(12).hours.do(scrapperJob)
+
+    # Keep the scheduled tasks running in the background
+    while True:
+        schedule.run_pending()
+        time.sleep(15)
+
+# ---------------------
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Start the scheduler in a separate process
+    scheduler = Process(target=start_scheduler)
+    scheduler.start()
+
+    # Start the Flask web server
+    app.run(debug=False, use_reloader=False)
+
+    # Terminate the scheduler process when the Flask app is stopped
+    scheduler.terminate()
+    

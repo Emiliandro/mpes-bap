@@ -82,6 +82,10 @@ class MessageService:
     def get_message_between_dates(self,from_date,to_date):
         messages = self.session.query(Message).filter(Message.published_at.between(from_date, to_date)).all()
         return [self._message_to_dict(message) for message in messages]
+    
+    def get_messages_between_dates_with_category(self,from_date,to_date,category):
+        messages = self.session.query(Message).filter(Message.category==category).filter(Message.published_at.between(from_date, to_date)).all()
+        return [self._message_to_dict(message) for message in messages]
 
     def create_messages(self,messages):
         for msg in messages:

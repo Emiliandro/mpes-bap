@@ -4,6 +4,7 @@ from flask_swagger_ui import get_swaggerui_blueprint
 # escape function causes param to be rendered as text, preventing the execution of 
 # injection script in the user’s browser or the in the api request.
 from markupsafe import escape
+from datetime import datetime 
 
 # Flask-Limiter or Flask-RateLimiter. These libraries provide 
 # easy-to-use decorators that can be used to limit the number 
@@ -18,9 +19,9 @@ from bap_main import BapMain
 # schedule module in Python to schedule a script to run once a day at a specific time. 
 import schedule
 import time
-
 app = Flask(__name__)
 limiter = Limiter(app)
+date_format = "%Y-%m-%d"
 
 SWAGGER_URL = '/api/docs'
 API_URL = '/static/swagger.json'
@@ -51,6 +52,33 @@ def get_by_id():
 def get_by_category():
     category = escape(request.json['category'])
     message = message_service.get_message_by_category(category=category)
+    return jsonify(message)
+
+@app.route('/from_date', methods=['POST'])
+def get_from_date():
+    date_string =escape(request.json['from_date'])
+    date_object = datetime.strptime(date_string, date_format)
+    message = message_service.get_all_messages_from_date(from_date=date_object)
+    return jsonify(message)
+
+
+@app.route('/between_date', methods=['POST'])
+def get_between_date():
+    from_date =escape(request.json['from_date'])
+    until_date =escape(request.json['until_date'])
+    date_object_from = datetime.strptime(from_date, date_format)
+    date_object_until = datetime.strptime(until_date, date_format)
+    message = message_service.get_all_messages_between_dates(from_date=date_object_from,to_date=date_object_until)
+    return jsonify(message)
+
+@app.route('/category_between_date', methods=['POST'])
+def get_category_between_date():
+    category = escape(request.json['category'])
+    from_date =escape(request.json['from_date'])
+    until_date =escape(request.json['until_date'])
+    date_object_from = datetime.strptime(from_date, date_format)
+    date_object_until = datetime.strptime(until_date, date_format)
+    message = message_service.get_messages_between_dates_with_category(category=category,from_date=date_object_from,to_date=date_object_until)
     return jsonify(message)
 
 @app.route('/messages', methods=['POST'])
@@ -94,8 +122,8 @@ def scrapperJob():
 def start_scheduler():
     # Schedule the task to run every day at 13:00
     #schedule.every().day.at(webscrapper_time).do(scrapperJob)
-    #schedule.every(7).minutes.do(scrapperJob)
-    schedule.every(12).hours.do(scrapperJob)
+    ##schedule.every(5).minutes.do(scrapperJob)
+    #schedule.every(12).hours.do(scrapperJob)
 
     # Keep the scheduled tasks running in the background
     while True:

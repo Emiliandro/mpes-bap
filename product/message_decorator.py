@@ -22,8 +22,14 @@ class MessageDecorator:
     def get_all_messages_between_dates(self,from_date,to_date):
         return self._message_service.get_message_between_dates(from_date=from_date,to_date=to_date)
 
+    def get_all_messages_from_date(self,from_date):
+        return self._message_service.get_message_between_dates(from_date=from_date,to_date=from_date)
+
     def get_message_by_category(self, category):
         return self._message_service.get_message_by_category(category)
+
+    def get_messages_between_dates_with_category(self,from_date,to_date,category):
+        return self._message_service.get_messages_between_dates_with_category(from_date=from_date,to_date=to_date,category=category)
 
     def get_message_by_id(self, message_id):
         return self._message_service.get_message_by_id(message_id)

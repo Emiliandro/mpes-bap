@@ -36,6 +36,14 @@ app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 message_service = MessageService()
 message_service = MessageDecorator(message_service)
 
+def filter_request(request):
+    from_date = escape(request.json['from_date'])
+    until_date = escape(request.json['until_date'])
+    return {
+        'category': escape(request.json['category']),
+        'from_date':datetime.strptime(from_date, date_format),
+        'until_date':datetime.strptime(until_date, date_format) }
+
 @app.route('/get_all', methods=['GET'])
 @limiter.limit("5 per minute")
 def get_all():
@@ -54,31 +62,16 @@ def get_by_category():
     message = message_service.get_message_by_category(category=category)
     return jsonify(message)
 
-@app.route('/from_date', methods=['POST'])
-def get_from_date():
-    date_string =escape(request.json['from_date'])
-    date_object = datetime.strptime(date_string, date_format)
-    message = message_service.get_all_messages_from_date(from_date=date_object)
-    return jsonify(message)
-
-
 @app.route('/between_date', methods=['POST'])
 def get_between_date():
-    from_date =escape(request.json['from_date'])
-    until_date =escape(request.json['until_date'])
-    date_object_from = datetime.strptime(from_date, date_format)
-    date_object_until = datetime.strptime(until_date, date_format)
-    message = message_service.get_all_messages_between_dates(from_date=date_object_from,to_date=date_object_until)
+    validated = filter_request(request=request)
+    message = message_service.get_all_messages_between_dates(from_date=validated['from_date'],to_date=validated['until_date'])
     return jsonify(message)
 
 @app.route('/category_between_date', methods=['POST'])
 def get_category_between_date():
-    category = escape(request.json['category'])
-    from_date =escape(request.json['from_date'])
-    until_date =escape(request.json['until_date'])
-    date_object_from = datetime.strptime(from_date, date_format)
-    date_object_until = datetime.strptime(until_date, date_format)
-    message = message_service.get_messages_between_dates_with_category(category=category,from_date=date_object_from,to_date=date_object_until)
+    validated = filter_request(request=request)
+    message = message_service.get_messages_between_dates_with_category(category=validated['category'],from_date=validated['from_date'],to_date=validated['until_date'])
     return jsonify(message)
 
 @app.route('/messages', methods=['POST'])

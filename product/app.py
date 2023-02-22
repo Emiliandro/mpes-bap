@@ -80,7 +80,7 @@ def delete_message(message_id):
 
 # ---------------------
 webscrapper = BapMain()
-webscrapper_time = "13:15"
+webscrapper_time = "13:00"
 
 def scrapperJob():
     with app.app_context():
@@ -93,8 +93,9 @@ def scrapperJob():
 
 def start_scheduler():
     # Schedule the task to run every day at 13:00
-    schedule.every().day.at(webscrapper_time).do(scrapperJob)
-    #schedule.every(1).minutes.do(scrapperJob)
+    #schedule.every().day.at(webscrapper_time).do(scrapperJob)
+    #schedule.every(7).minutes.do(scrapperJob)
+    schedule.every(12).hours.do(scrapperJob)
 
     # Keep the scheduled tasks running in the background
     while True:
@@ -104,12 +105,12 @@ def start_scheduler():
 # ---------------------
 if __name__ == '__main__':
     # Start the scheduler in a separate process
-    #scheduler = Process(target=start_scheduler)
-    #scheduler.start()
+    scheduler = Process(target=start_scheduler)
+    scheduler.start()
 
     # Start the Flask web server
     app.run(debug=False, use_reloader=False)
 
     # Terminate the scheduler process when the Flask app is stopped
-    #scheduler.terminate()
+    scheduler.terminate()
     

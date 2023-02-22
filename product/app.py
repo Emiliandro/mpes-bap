@@ -120,10 +120,10 @@ def scrapperJob():
         print(upload)
 
 def start_scheduler():
-    # Schedule the task to run every day at 13:00
+    #Schedule the task to run every day at 13:00
     #schedule.every().day.at(webscrapper_time).do(scrapperJob)
     ##schedule.every(5).minutes.do(scrapperJob)
-    #schedule.every(12).hours.do(scrapperJob)
+    schedule.every(12).hours.do(scrapperJob)
 
     # Keep the scheduled tasks running in the background
     while True:

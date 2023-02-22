@@ -8,13 +8,13 @@ from markupsafe import escape
 # Flask-Limiter or Flask-RateLimiter. These libraries provide 
 # easy-to-use decorators that can be used to limit the number 
 # of requests made to certain endpoints in your application.
-from flask_limiter import Limiter #from flask_limiter.util import get_remote_address
-from MessageDecorator import MessageDecorator
-from MessageService import MessageService
+from flask_limiter import Limiter
+from multiprocessing import Process
+
+from message_decorator import MessageDecorator
+from message_service import MessageService
 from bap_main import BapMain
 
-
-from multiprocessing import Process
 # schedule module in Python to schedule a script to run once a day at a specific time. 
 import schedule
 import time

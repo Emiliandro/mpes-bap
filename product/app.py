@@ -98,12 +98,12 @@ def start_scheduler():
 # ---------------------
 if __name__ == '__main__':
     # Start the scheduler in a separate process
-    scheduler = Process(target=start_scheduler)
-    scheduler.start()
+    #scheduler = Process(target=start_scheduler)
+    #scheduler.start()
 
     # Start the Flask web server
     app.run(debug=False, use_reloader=False)
 
     # Terminate the scheduler process when the Flask app is stopped
-    scheduler.terminate()
+    #scheduler.terminate()
     

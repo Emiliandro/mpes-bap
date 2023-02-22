@@ -64,17 +64,17 @@ class MessageService:
         self.session = Session()
 
     def get_all_messages(self):
-        messages = Message.query.all()
+        messages = self.session.query(Message).all()
         return [self._message_to_dict(message) for message in messages]
 
     def get_message_by_id(self, message_id):
-        message = Message.query.get(message_id)
+        message = self.session.query(Message).get(message_id)
         if message is None:
             raise ValueError("Message not found")
         return self._message_to_dict(message)
 
     def get_message_between_dates(self,from_date,to_date):
-        messages = Message.query.filter(Message.published_at.between(from_date, to_date)).all()
+        messages = self.session.query(Message).filter(Message.published_at.between(from_date, to_date)).all()
         return [self._message_to_dict(message) for message in messages]
 
     def create_messages(self,messages):
@@ -98,18 +98,21 @@ class MessageService:
         message.description = description
         message.source = source
         message.category = category
+        
         try:
             message.published_at = datetime.strptime(date_string, date_format)
         except:
             return { "error": "Invalid datetime}" }
+
         self.session.add(message)
         self.session.commit()
         return self._message_to_dict(message)
 
     def update_message(self, message_id, title, description, source):
-        message = Message.query.get(message_id)
+        message = self.session.query(Message).get(message_id)
         if message is None:
             raise ValueError("Message not found")
+
         message.title = title
         message.description = description
         message.source = source
@@ -117,12 +120,17 @@ class MessageService:
         return self._message_to_dict(message)
 
     def delete_message(self, message_id):
-        message = Message.query.get(message_id)
+        message = self.session.query(Message).get(message_id)
         if message is None:
             raise ValueError("Message not found")
+
         self.session.delete(message)
         self.session.commit()
         return {'message': 'Message deleted successfully'}
+    
+    
+    def get_categorie(self, category):
+        return self.session.query(Message).filter(Message.category==category).all()
 
     def _message_to_dict(self, message):
         return {
@@ -132,4 +140,4 @@ class MessageService:
                 'source': message.source, 
                 'published_at': message.published_at, 
                 'category':message.category
-            }
+               }

@@ -66,6 +66,12 @@ class MessageService:
     def get_all_messages(self):
         messages = self.session.query(Message).all()
         return [self._message_to_dict(message) for message in messages]
+    
+    def get_message_by_category(self, category):
+        messages = self.session.query(Message).filter(Message.category==category).all()
+        if messages is None:
+            raise ValueError("Messages not found")
+        return [self._message_to_dict(message) for message in messages]
 
     def get_message_by_id(self, message_id):
         message = self.session.query(Message).get(message_id)
@@ -98,7 +104,7 @@ class MessageService:
         message.description = description
         message.source = source
         message.category = category
-        
+
         try:
             message.published_at = datetime.strptime(date_string, date_format)
         except:
@@ -127,10 +133,6 @@ class MessageService:
         self.session.delete(message)
         self.session.commit()
         return {'message': 'Message deleted successfully'}
-    
-    
-    def get_categorie(self, category):
-        return self.session.query(Message).filter(Message.category==category).all()
 
     def _message_to_dict(self, message):
         return {

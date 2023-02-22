@@ -35,16 +35,22 @@ app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 message_service = MessageService()
 message_service = MessageDecorator(message_service)
 
-@app.route('/get_messages', methods=['GET'])
+@app.route('/get_all', methods=['GET'])
 @limiter.limit("5 per minute")
-def get_all_messages():
+def get_all():
     messages = message_service.get_all_messages()
     return jsonify(messages)
 
-@app.route('/messages/<int:message_id>', methods=['GET'])
-@limiter.limit("5 per minute")
-def get_message(message_id):
-    message = message_service.get_message_by_id(message_id)
+@app.route('/by_id', methods=['POST'])
+def get_by_id():
+    message_id = escape(request.json['message_id'])
+    message = message_service.get_message_by_id(message_id=message_id)
+    return jsonify(message)
+
+@app.route('/by_category', methods=['POST'])
+def get_by_category():
+    category = escape(request.json['category'])
+    message = message_service.get_message_by_category(category=category)
     return jsonify(message)
 
 @app.route('/messages', methods=['POST'])

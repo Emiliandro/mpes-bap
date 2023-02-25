@@ -14,6 +14,8 @@ from multiprocessing import Process
 
 from message_decorator import MessageDecorator
 from message_service import MessageService
+from category_decorator import CategoryDecorator
+from category_service import CategoryService
 from bap_main import BapMain
 
 # schedule module in Python to schedule a script to run once a day at a specific time. 
@@ -35,6 +37,8 @@ swaggerui_blueprint = get_swaggerui_blueprint(
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 message_service = MessageService()
 message_service = MessageDecorator(message_service)
+category_service = CategoryService()
+category_service = CategoryDecorator(category_service)
 
 def filter_request(request):
     from_date = escape(request.json['from_date'])
@@ -98,6 +102,24 @@ def update_message(message_id):
 def delete_message(message_id):
     response = message_service.delete_message(message_id)
     return f"Message {request.json['source']} deleted"
+
+@app.route('/add_category', methods=['POST'])
+def add_category():
+    category_name = escape(request.json['category'])
+    return create_category(category_name=category_name)
+
+def create_category(category_name):
+    response = category_service.create_category(categorie_name=category_name)
+    return f"Message {request.json['category_name']} created"
+
+@app.route('/get_all_categories', methods=['POST'])
+def get_all_categories():
+    return get_categories()
+
+def get_categories():
+    messages = category_service.get_all_categorys()
+    return jsonify(messages)
+
 
 # ---------------------
 webscrapper = BapMain()

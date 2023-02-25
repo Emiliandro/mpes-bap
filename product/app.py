@@ -20,6 +20,7 @@ from bap_main import BapMain
 
 # schedule module in Python to schedule a script to run once a day at a specific time. 
 import schedule
+import asyncio
 import time
 app = Flask(__name__)
 limiter = Limiter(app)
@@ -110,39 +111,41 @@ def add_category():
 
 def create_category(category_name):
     response = category_service.create_category(categorie_name=category_name)
-    return f"Message {request.json['category_name']} created"
+    return f"Message {category_name} created"
 
 @app.route('/get_all_categories', methods=['POST'])
 def get_all_categories():
-    return get_categories()
+    return jsonify(get_categories())
 
 def get_categories():
     messages = category_service.get_all_categorys()
-    return jsonify(messages)
+    return messages
 
 
 # ---------------------
 webscrapper = BapMain()
 webscrapper_time = "13:00"
 
-def scrapperJob():
+async def do_scrapp():
     with app.app_context():
-        print("Script is running at ",webscrapper_time)
+        print("Script is running at ",datetime.now())
+
         categories_to_fetch = get_categories()
         webscrapper.set_categories(categories_to_fetch)
-        time.sleep(2)
 
-        messages = webscrapper.getMessages()
+        messages = webscrapper.get_messages()
         print("in total were fetched:",len(messages),"messages in this time.")
-        time.sleep(6)
-        
+            
         upload = message_service.create_messages(messages)
         print(upload)
+
+def scrapperJob():
+    asyncio.run(do_scrapp())
 
 def start_scheduler():
     #Schedule the task to run every day at 13:00
     #schedule.every().day.at(webscrapper_time).do(scrapperJob)
-    ##schedule.every(5).minutes.do(scrapperJob)
+    #schedule.every(1).minutes.do(scrapperJob)
     schedule.every(12).hours.do(scrapperJob)
 
     # Keep the scheduled tasks running in the background

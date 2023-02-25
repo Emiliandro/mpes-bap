@@ -128,9 +128,14 @@ webscrapper_time = "13:00"
 def scrapperJob():
     with app.app_context():
         print("Script is running at ",webscrapper_time)
+        categories_to_fetch = get_categories()
+        webscrapper.set_categories(categories_to_fetch)
+        time.sleep(2)
+
         messages = webscrapper.getMessages()
         print("in total were fetched:",len(messages),"messages in this time.")
-        time.sleep(5)
+        time.sleep(6)
+        
         upload = message_service.create_messages(messages)
         print(upload)
 

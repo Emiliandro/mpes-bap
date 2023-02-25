@@ -11,6 +11,9 @@ class BapMain():
     def createTodayFile(self):
         self.webscrapper.makeTxtFile()
 
+    def set_categories(categories):
+        print(type(categories))
+
     def getTodayFile(self):
         try:
             file = open(self.file_name, 'rb')

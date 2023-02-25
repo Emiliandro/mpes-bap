@@ -14,6 +14,9 @@ from markupsafe import escape
 #        print("\"",result['phrase'],"\",")
 
 class BapDDG():
+    def setCategories(self,categories):
+        self.categories = categories
+
     def searchPhrase(self,value,category='none'):
         self.phrase_to_results = ddg(value, region='br-pt', safesearch='on', time='y', max_results=9)
 
@@ -29,16 +32,18 @@ class BapDDG():
     def __init__(self,today):
         self.list_suggestions = []
         self.file_name = "" + today + ".txt"
+        self.categories = []
 
     def makeTxtFile(self):
-        for i in [" autoesporte "," autoesporte g1 "," auto esporte globo "," autoesporte domingo "," autoesporte passo fundo "," autoesporte qual comprar 2022 "," autoesporte mclaren "," auto esporte revista "," autoesporte g1 "," auto esporte globo "," auto esporte globoplay "," auto esporte globo domingo "," autoesporte domingo "," auto esporte revista "," autosport revista "," autoesporte g1 "," auto esporte globo "," auto esporte globoplay "," auto esporte globo domingo "," auto esporte globoplay "," auto esporte globo domingo "," auto esporte de hoje domingo "," auto esporte globo hoje "," auto esporte de domingo "," auto esporte na globo "," auto esporte globo ontem "," programa auto esporte globo "," auto esporte globo play "," autoesporte domingo "," autoesporte passo fundo "," auto esporte passo fundo telefone "," auto esporte passo fundo rs "," auto esporte passo fundo centro "," autoesporte mclaren "," autosport mclaren f1 forum "," autosport mclaren f1 forum "," automotive forums mclaren f1 "]:
-            self.searchPhrase(value=i,category="autoesporte")
+        if (self.categories.count == 0):
+            for i in [" autoesporte "," autoesporte g1 "," auto esporte globo "," autoesporte domingo "," autoesporte passo fundo "," autoesporte qual comprar 2022 "," autoesporte mclaren "," auto esporte revista "," autoesporte g1 "," auto esporte globo "," auto esporte globoplay "," auto esporte globo domingo "," autoesporte domingo "," auto esporte revista "," autosport revista "," autoesporte g1 "," auto esporte globo "," auto esporte globoplay "," auto esporte globo domingo "," auto esporte globoplay "," auto esporte globo domingo "," auto esporte de hoje domingo "," auto esporte globo hoje "," auto esporte de domingo "," auto esporte na globo "," auto esporte globo ontem "," programa auto esporte globo "," auto esporte globo play "," autoesporte domingo "," autoesporte passo fundo "," auto esporte passo fundo telefone "," auto esporte passo fundo rs "," auto esporte passo fundo centro "," autoesporte mclaren "," autosport mclaren f1 forum "," autosport mclaren f1 forum "," automotive forums mclaren f1 "]:
+                self.searchPhrase(value=i,category="autoesporte")
 
-        for i in [" tecnologia "," tecnologia da informação "," tecnologia assistiva "," tecnologia 5g "," tecnologia na educação "," tecnologia sinônimo "," tecnologias disruptivas "," tecnologia e inovação "," tecnologia da informação "," tecnologia da informação faculdade "," tecnologia da informação e comunicação ", " tecnologia g1"]:
-            self.searchPhrase(value=i,category="tecnologia")
-        
-        for i in [" turismo sustentável", "turismo g1"]:
-            self.searchPhrase(value=i,category="turismo")
+            for i in [" tecnologia "," tecnologia da informação "," tecnologia assistiva "," tecnologia 5g "," tecnologia na educação "," tecnologia sinônimo "," tecnologias disruptivas "," tecnologia e inovação "," tecnologia da informação "," tecnologia da informação faculdade "," tecnologia da informação e comunicação ", " tecnologia g1"]:
+                self.searchPhrase(value=i,category="tecnologia")
+            
+            for i in [" turismo sustentável", "turismo g1"]:
+                self.searchPhrase(value=i,category="turismo")
         
         with open(self.file_name, "wb") as f:
             pickle.dump(self.list_suggestions, f, protocol=pickle.HIGHEST_PROTOCOL)

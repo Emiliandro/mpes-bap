@@ -9,7 +9,13 @@ today_str = today.strftime('%Y-%m-%d')
 
 class BapMain():
     def createTodayFile(self):
-        self.webscrapper.makeTxtFile()
+        self.webscrapper.make_txt_file()
+
+    def set_categories(self,categories):
+        list_categories = []
+        for category in categories:
+            list_categories.append(category['category'])
+        self.webscrapper.set_categories(list_categories)
 
     def getTodayFile(self):
         try:
@@ -47,7 +53,7 @@ class BapMain():
         self.webscrapper = BapDDG(today_str)
         self.current_dictionaries = []
         
-    def getMessages(self):
+    def get_messages(self):
         self.createTodayFile()
         self.today_files = self.getAndValidateTodayFiles(create_file=True)
         return self.today_files

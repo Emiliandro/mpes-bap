@@ -68,7 +68,7 @@ class MessageService:
         return [self._message_to_dict(message) for message in messages]
     
     def get_message_by_category(self, category):
-        messages = self.session.query(Message).filter(Message.category==category).all()
+        messages = self.session.query(Message).filter(Message.category==category)
         if messages is None:
             raise ValueError("Messages not found")
         return [self._message_to_dict(message) for message in messages]

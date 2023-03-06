@@ -41,14 +41,6 @@ message_service = MessageDecorator(message_service)
 category_service = CategoryService()
 category_service = CategoryDecorator(category_service)
 
-def filter_request(request):
-    from_date = escape(request.json['from_date'])
-    until_date = escape(request.json['until_date'])
-    return {
-        'category': escape(request.json['category']),
-        'from_date':datetime.strptime(from_date, date_format),
-        'until_date':datetime.strptime(until_date, date_format) }
-
 @app.route('/get_all', methods=['GET'])
 @limiter.limit("5 per minute")
 def get_all():
@@ -69,13 +61,24 @@ def get_by_category():
 
 @app.route('/between_date', methods=['POST'])
 def get_between_date():
-    validated = filter_request(request=request)
+    from_date = escape(request.json['from_date'])
+    until_date = escape(request.json['until_date'])
+    validated = {
+        'from_date':datetime.strptime(from_date, date_format),
+        'until_date':datetime.strptime(until_date, date_format) }    
     message = message_service.get_all_messages_between_dates(from_date=validated['from_date'],to_date=validated['until_date'])
     return jsonify(message)
 
 @app.route('/category_between_date', methods=['POST'])
 def get_category_between_date():
-    validated = filter_request(request=request)
+
+    from_date = escape(request.json['from_date'])
+    until_date = escape(request.json['until_date'])
+    validated = {
+        'category': escape(request.json['category']),
+        'from_date':datetime.strptime(from_date, date_format),
+        'until_date':datetime.strptime(until_date, date_format) }
+
     message = message_service.get_messages_between_dates_with_category(category=validated['category'],from_date=validated['from_date'],to_date=validated['until_date'])
     return jsonify(message)
 
@@ -96,7 +99,7 @@ def update_message(message_id):
     source = escape(request.json['source'])
     published_at = escape(request.json['published_at'])
     category = escape(request.json['category'])
-    message = message_service.update_message(message_id, title, description, source,category,published_at)
+    message = message_service.update_message(message_id, title, description, source, category, published_at)
     return f"Message {request.json['source']} updated"
 
 @app.route('/messages/<int:message_id>', methods=['DELETE'])

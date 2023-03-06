@@ -118,11 +118,18 @@ class MessageService:
         self.session.commit()
         return self._message_to_dict(message)
 
-    def update_message(self, message_id, title, description, source):
+    def update_message(self, message_id, title, description, source, category, published_at):
         message = self.session.query(Message).get(message_id)
         if message is None:
-            raise ValueError("Message not found")
+            self.create_message(title, description, source, category, published_at)
+            #raise ValueError("Message not found")
 
+        try:
+            message.published_at = datetime.strptime(published_at, date_format)
+        except:
+            return { "error": "Invalid datetime}" }
+
+        message.category = category
         message.title = title
         message.description = description
         message.source = source

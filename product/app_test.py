@@ -12,13 +12,13 @@ class TestApp(unittest.TestCase):
 
     def test_get_by_category(self):
         response = self.app.post('/by_category', json={
-            'category': 'news'})
+            'category': 'all'})
         self.assertEqual(response.status_code, 200)
 
     def test_get_between_date(self):
         response = self.app.post('/between_date', json={
             'from_date': '2022-01-01', 
-            'until_date': '2022-01-02'})
+            'until_date': '2024-01-02'})
         self.assertEqual(response.status_code, 200)
 
     def test_get_category_between_date(self):

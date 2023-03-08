@@ -15,7 +15,15 @@ class DataHelper(object):
         return [d for d in messages if len(d.get("description", "")) >= 50]
 
     def removeDuplicates(self, messages):
-        return [dict(t) for t in {tuple(d.items()) for d in messages if "source" in d and not any(d["source"] == x["source"] for x in messages if x is not d)}]
+        unique_sources = set()
+        deduplicated_messages = []
+
+        for message in messages:
+            if message["source"] not in unique_sources:
+                deduplicated_messages.append(message)
+                unique_sources.add(message["source"])
+
+        return deduplicated_messages
 
     def validateUrl(self,url):
         try:

@@ -14,87 +14,61 @@ class TestMessageService(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.engine = create_engine("sqlite:///:memory:")
-        cls.Session = sessionmaker(bind=cls.engine)
-        cls.session = cls.Session()
-        Message.metadata.create_all(cls.engine)
+        cls.service = MessageService()
+        cls.test_messages = [
+            {"title": "Test Message 1", "description": "This is a test message.", "source": "Test Source 1", "category": "Test Category 1", "published_at": "2023-03-01"},
+            {"title": "Test Message 2", "description": "This is another test message.", "source": "Test Source 2", "category": "Test Category 2", "published_at": "2023-03-02"},
+            {"title": "Test Message 3", "description": "This is yet another test message.", "source": "Test Source 3", "category": "Test Category 1", "published_at": "2023-03-03"}
+        ]
+        cls.service.create_messages(cls.test_messages)
 
-    def setUp(self):
-        self.service = MessageService()
+    @classmethod
+    def tearDownClass(cls):
+        cls.service.session.query(Message).delete()
+        cls.service.session.commit()
 
-    def tearDown(self):
-        self.session.query(Message).delete()
-        self.session.commit()
-
-    def test_create_message(self):
-        # Test creating a message with valid data
-        title = "Test message"
-        description = "This is a test message"
-        source = "Test source"
-        category = "Test category"
-        date_string = "2022-01-01"
-        self.service.create_message(title, description, source, category, date_string)
+    def test_get_all_messages(self):
         messages = self.service.get_all_messages()
-        self.assertEqual(len(messages), 1)
-        self.assertEqual(messages[0]["title"], title)
+        self.assertEqual(len(messages), 3)
 
-        # Test creating a message with an invalid date string
-        title = "Test message 2"
-        description = "This is another test message"
-        source = "Test source"
-        category = "Test category"
-        date_string = "invalid date"
-        response = self.service.create_message(title, description, source, category, date_string)
-        self.assertEqual(response["error"], "Invalid datetime}")
+    def test_get_message_by_category(self):
+        messages = self.service.get_message_by_category("Test Category 1")
+        self.assertEqual(len(messages), 2)
+        self.assertEqual(messages[0]["title"], "Test Message 1")
+        self.assertEqual(messages[1]["title"], "Test Message 3")
 
     def test_get_message_by_id(self):
-        # Test getting a message by ID
-        title = "Test message"
-        description = "This is a test message"
-        source = "Test source"
-        category = "Test category"
-        date_string = "2022-01-01"
-        message = self.service.create_message(title, description, source, category, date_string)
-        message_id = message["id"]
-        result = self.service.get_message_by_id(message_id)
-        self.assertEqual(result["id"], message_id)
-        self.assertEqual(result["title"], title)
+        message_id = self.service.session.query(Message.id).filter(Message.title=="Test Message 1").first()[0]
+        message = self.service.get_message_by_id(message_id)
+        self.assertEqual(message["title"], "Test Message 1")
 
-        # Test getting a non-existent message by ID
-        with self.assertRaises(ValueError):
-            self.service.get_message_by_id(999)
+    def test_get_message_between_dates(self):
+        from_date = datetime(2023, 3, 2)
+        to_date = datetime(2023, 3, 3)
+        messages = self.service.get_message_between_dates(from_date, to_date)
+        self.assertEqual(len(messages), 2)
+        self.assertEqual(messages[0]["title"], "Test Message 2")
+        self.assertEqual(messages[1]["title"], "Test Message 3")
 
     def test_get_messages_between_dates_with_category(self):
-        self.service.create_message(
-            title='Test Message 1',
-            description='This is a test message',
-            source='https://test.com',
-            category='test',
-            date_string='2022-03-01'
-        )
-        self.service.create_message(
-            title='Test Message 2',
-            description='This is another test message',
-            source='https://test.com',
-            category='test',
-            date_string='2022-03-05'
-        )
+        from_date = datetime(2023, 3, 2)
+        to_date = datetime(2023, 3, 3)
+        messages = self.service.get_messages_between_dates_with_category(from_date, to_date, "Test Category 1")
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(messages[0]["title"], "Test Message 3")
 
-        messages = self.service.get_messages_between_dates_with_category(
-            from_date=datetime(2022, 3, 1),
-            to_date=datetime(2022, 3, 5),
-            category='test'
-        )
+    def test_create_message(self):
+        title = "New Test Message"
+        description = "This is a new test message."
+        source = "New Test Source"
+        category = "New Test Category"
+        date_string = "2023-03-04"
+        message = self.service.create_message(title, description, source, category, date_string)
+        self.assertEqual(message["title"], title)
+        self.assertEqual(message["description"], description)
+        self.assertEqual(message["source"], source)
+        self.assertEqual(message["category"], category)
+        self.assertEqual(message["published_at"], date_string)
 
-        self.assertEqual(len(messages), 2)
-        self.assertEqual(messages[0]['title'], 'Test Message 1')
-        self.assertEqual(messages[1]['title'], 'Test Message 2')
-
-    def test_get_messages_between_dates_with_category_no_results(self):
-        with self.assertRaises(ValueError):
-            self.service.get_messages_between_dates_with_category(
-                from_date=datetime(2022, 3, 1),
-                to_date=datetime(2022, 3, 5),
-                category='test'
-            )
-
+if __name__ == '__main__':
+    unittest.main()

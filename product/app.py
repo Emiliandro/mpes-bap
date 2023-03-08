@@ -17,6 +17,7 @@ from message_service import MessageService
 from category_decorator import CategoryDecorator
 from category_service import CategoryService
 from bap_main import BapMain
+from api_main import APIMain
 
 # schedule module in Python to schedule a script to run once a day at a specific time. 
 import schedule
@@ -32,7 +33,7 @@ swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
     API_URL,
     config={
-        'app_name': 'My Message API'
+        'app_name': 'BAPs API'
     }
 )
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
@@ -40,6 +41,7 @@ message_service = MessageService()
 message_service = MessageDecorator(message_service)
 category_service = CategoryService()
 category_service = CategoryDecorator(category_service)
+api_helper = APIMain(message_service)
 
 @app.route('/get_all', methods=['GET'])
 @limiter.limit("5 per minute")
@@ -49,68 +51,28 @@ def get_all():
 
 @app.route('/by_id', methods=['POST'])
 def get_by_id():
-    message_id = escape(request.json['message_id'])
-    message = message_service.get_message_by_id(message_id=message_id)
-    if message is None:
-        return jsonify({'error': f'Message with ID {message_id} not found'}), 404
-    return jsonify(message)
+    return api_helper.get_by_id(request=request)
 
 @app.route('/by_category', methods=['POST'])
 def get_by_category():
-    category = escape(request.json['category'])
-    message = message_service.get_message_by_category(category=category)
-    if message is None:
-        return jsonify({'error': f'Message with category {category} not found'}), 404
-    return jsonify(message)
+    return api_helper.get_by_category(request=request)
 
 @app.route('/between_date', methods=['POST'])
 def get_between_date():
-    from_date = escape(request.json['from_date'])
-    until_date = escape(request.json['until_date'])
-    validated = {
-        'from_date':datetime.strptime(from_date, date_format),
-        'until_date':datetime.strptime(until_date, date_format) }    
-    message = message_service.get_all_messages_between_dates(from_date=validated['from_date'],to_date=validated['until_date'])
-    if message is None:
-        return jsonify({'error': f'Message with between dates {from_date} and {until_date} not found'}), 404
-    return jsonify(message)
+    return api_helper.get_between_date(request=request)
 
 @app.route('/category_between_date', methods=['POST'])
 def get_category_between_date():
-
-    from_date = escape(request.json['from_date'])
-    until_date = escape(request.json['until_date'])
-    validated = {
-        'category': escape(request.json['category']),
-        'from_date':datetime.strptime(from_date, date_format),
-        'until_date':datetime.strptime(until_date, date_format) }
-
-    message = message_service.get_messages_between_dates_with_category(category=validated['category'],from_date=validated['from_date'],to_date=validated['until_date'])
-    
-    if message is None:
-        return jsonify({'error': f'Message with between dates {from_date} and {until_date} not found'}), 404
-    return jsonify(message)
+    return api_helper.get_category_between_date(request=request)
 
 @app.route('/messages', methods=['POST'])
 def add_message():
-    title = escape(request.json['title'])
-    description = escape(request.json['description'])
-    source = escape(request.json['source'])
-    category = escape(request.json['category'])
-    published_at = escape(request.json['published_at'])
-    message = message_service.create_message(title, description, source, category, published_at)
-    return jsonify(message)
+    return api_helper.add_message(request=request)
 
 @app.route('/messages/<int:message_id>', methods=['PUT'])
 def update_message(message_id):
-    title = escape(request.json['title'])
-    description = escape(request.json['description'])
-    source = escape(request.json['source'])
-    published_at = escape(request.json['published_at'])
-    category = escape(request.json['category'])
-    message = message_service.update_message(message_id, title, description, source, category, published_at)
-    return f"Message {request.json['source']} updated"
-
+    return api_helper.update_message(request=request,message_id=message_id)
+        
 @app.route('/messages/<int:message_id>', methods=['DELETE'])
 def delete_message(message_id):
     response = message_service.delete_message(message_id)
@@ -133,10 +95,8 @@ def get_categories():
     messages = category_service.get_all_categorys()
     return messages
 
-
 # ---------------------
 webscrapper = BapMain()
-webscrapper_time = "13:00"
 
 async def do_scrapp():
     with app.app_context():
@@ -155,8 +115,6 @@ def scrapperJob():
     asyncio.run(do_scrapp())
 
 def start_scheduler():
-    #Schedule the task to run every day at 13:00
-    #schedule.every().day.at(webscrapper_time).do(scrapperJob)
     #schedule.every(1).minutes.do(scrapperJob)
     schedule.every(12).hours.do(scrapperJob)
 

@@ -51,12 +51,16 @@ def get_all():
 def get_by_id():
     message_id = escape(request.json['message_id'])
     message = message_service.get_message_by_id(message_id=message_id)
+    if message is None:
+        return jsonify({'error': f'Message with ID {message_id} not found'}), 404
     return jsonify(message)
 
 @app.route('/by_category', methods=['POST'])
 def get_by_category():
     category = escape(request.json['category'])
     message = message_service.get_message_by_category(category=category)
+    if message is None:
+        return jsonify({'error': f'Message with category {category} not found'}), 404
     return jsonify(message)
 
 @app.route('/between_date', methods=['POST'])
@@ -67,6 +71,8 @@ def get_between_date():
         'from_date':datetime.strptime(from_date, date_format),
         'until_date':datetime.strptime(until_date, date_format) }    
     message = message_service.get_all_messages_between_dates(from_date=validated['from_date'],to_date=validated['until_date'])
+    if message is None:
+        return jsonify({'error': f'Message with between dates {from_date} and {until_date} not found'}), 404
     return jsonify(message)
 
 @app.route('/category_between_date', methods=['POST'])
@@ -80,6 +86,9 @@ def get_category_between_date():
         'until_date':datetime.strptime(until_date, date_format) }
 
     message = message_service.get_messages_between_dates_with_category(category=validated['category'],from_date=validated['from_date'],to_date=validated['until_date'])
+    
+    if message is None:
+        return jsonify({'error': f'Message with between dates {from_date} and {until_date} not found'}), 404
     return jsonify(message)
 
 @app.route('/messages', methods=['POST'])

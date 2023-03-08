@@ -1,0 +1,174 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "My Message API",
+      "version": "1.0.0",
+      "description": "API for retrieving and managing messages"
+    },
+    "basePath": "/",
+    "schemes": [
+      "http"
+    ],
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "paths": {
+      "/get_all": {
+        "get": {
+          "description": "Retrieve all messages",
+          "responses": {
+            "200": {
+              "description": "A list of all messages",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Message"
+                }
+              }
+            }
+          }
+        }
+      },
+      "/by_id": {
+        "post": {
+          "description": "Retrieve a message by ID",
+          "parameters": [
+            {
+              "name": "message_id",
+              "in": "body",
+              "description": "The ID of the message to retrieve",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "The requested message",
+              "schema": {
+                "$ref": "#/definitions/Message"
+              }
+            }
+          }
+        }
+      },
+      "/by_category": {
+        "post": {
+          "description": "Retrieve messages by category",
+          "parameters": [
+            {
+              "name": "category",
+              "in": "body",
+              "description": "The category of the messages to retrieve",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "A list of messages with the specified category",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Message"
+                }
+              }
+            }
+          }
+        }
+      },
+      "/between_date": {
+        "post": {
+          "description": "Retrieve messages between two dates",
+          "parameters": [
+            {
+              "name": "from_date",
+              "in": "body",
+              "description": "The starting date (inclusive)",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "format": "date"
+              }
+            },
+            {
+              "name": "until_date",
+              "in": "body",
+              "description": "The ending date (inclusive)",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "A list of messages between the specified dates",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Message"
+                }
+              }
+            }
+          }
+        }
+      },
+      "/category_between_date": {
+        "get": {
+          "summary": "Get Categories Between Date Range",
+          "description": "Retrieves all categories between a start and end date.",
+          "parameters": [
+            {
+              "name": "start_date",
+              "in": "query",
+              "description": "Start date of range in format yyyy-mm-dd",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "format": "date"
+              }
+            },
+            {
+              "name": "end_date",
+              "in": "query",
+              "description": "End date of range in format yyyy-mm-dd",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid start/end date provided"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      }
+    }
+  }

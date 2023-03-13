@@ -66,6 +66,7 @@ limiter = Limiter(app)
 date_format = "%Y-%m-%d"
 
 api = Api(app)
+<<<<<<< HEAD
 spec = APISpec(
         title='Bap',
         version='v1',
@@ -79,6 +80,17 @@ app.config.update({
     'APISPEC_SPEC': spec,
     'APISPEC_SWAGGER_URL': '/swagger/',  # URI to access API Doc JSON
     'APISPEC_SWAGGER_UI_URL': '/swagger-ui/'  # URI to access UI of API Doc
+=======
+app.config.update({
+    'APISPEC_SPEC': APISpec(
+        title='Bap',
+        version='v1',
+        plugins=[MarshmallowPlugin()],
+        openapi_version='2.0.0'
+    ),
+    'APISPEC_SWAGGER_URL': '/swagger',
+    'APISPEC_SWAGGER_UI_URL': '/swagger-ui',
+>>>>>>> eeb587d622e9d80ca8eeee39571ba41a7ddb3299
 })
 docs = FlaskApiSpec(app)
 
@@ -195,6 +207,11 @@ def start_scheduler():
         time.sleep(15)
 
 
+<<<<<<< HEAD
+=======
+docs.register(GetAll)
+docs.register(ById)
+>>>>>>> eeb587d622e9d80ca8eeee39571ba41a7ddb3299
 # ---------------------
 if __name__ == '__main__':
     # Start the scheduler in a separate process

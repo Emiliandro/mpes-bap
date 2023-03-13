@@ -1,6 +1,14 @@
 from flask import Flask, jsonify, request
 from flask_swagger_ui import get_swaggerui_blueprint
 
+from flask_restful import Resource, Api
+from apispec import APISpec
+from marshmallow import Schema, fields
+from apispec.ext.marshmallow import MarshmallowPlugin
+from flask_apispec.extension import FlaskApiSpec
+from flask_apispec.views import MethodResource
+from flask_apispec import marshal_with, doc, use_kwargs
+
 # escape function causes param to be rendered as text, preventing the execution of 
 # injection script in the user’s browser or the in the api request.
 from markupsafe import escape
@@ -27,31 +35,49 @@ app = Flask(__name__)
 limiter = Limiter(app)
 date_format = "%Y-%m-%d"
 
-SWAGGER_URL = '/api/docs'
-API_URL = '/static/swagger.json'
-swaggerui_blueprint = get_swaggerui_blueprint(
-    SWAGGER_URL,
-    API_URL,
-    config={
-        'app_name': 'BAPs API'
-    }
-)
-app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+api = Api(app)
+app.config.update({
+    'APISPEC_SPEC': APISpec(
+        title='Bap',
+        version='v1',
+        plugins=[MarshmallowPlugin()],
+        openapi_version='2.0.0'
+    ),
+    'APISPEC_SWAGGER_URL': '/swagger',
+    'APISPEC_SWAGGER_UI_URL': '/swagger-ui',
+})
+docs = FlaskApiSpec(app)
+
 message_service = MessageService()
 message_service = MessageDecorator(message_service)
 category_service = CategoryService()
 category_service = CategoryDecorator(category_service)
 api_helper = APIMain(message_service)
 
-@app.route('/get_all', methods=['GET'])
-@limiter.limit("5 per minute")
-def get_all():
-    messages = message_service.get_all_messages()
-    return jsonify(messages)
+BapResponseSchema = Schema.from_dict(
+    {"category": fields.Str(), "description": fields.Str(), "published_at": fields.DateTime(), "source": fields.Str(), "title": fields.Str()}
+)
 
-@app.route('/by_id', methods=['POST'])
-def get_by_id():
-    return api_helper.get_by_id(request=request)
+
+class BapRequestSchema(Schema):
+    message_id = fields.Integer(metadata={"places":0})
+
+@api.resource('/get_all')
+class GetAll(MethodResource, Resource):
+    @doc(description='Get All', tags=['GetAll'])
+    @marshal_with(BapResponseSchema())  # marshalling
+    
+    def get(self):
+        messages = message_service.get_all_messages()
+        return jsonify(messages)
+
+@api.resource('/by_id')
+class ById(MethodResource, Resource):
+    @doc(description='Post By Id.', tags=['ById'])
+    @use_kwargs(BapRequestSchema, location=('json'))
+    @marshal_with(BapRequestSchema)
+    def post(self, **kwargs):
+        return api_helper.get_by_id(request=request)
 
 @app.route('/by_category', methods=['POST'])
 def get_by_category():
@@ -115,7 +141,7 @@ def scrapperJob():
     asyncio.run(do_scrapp())
 
 def start_scheduler():
-    #schedule.every(1).minutes.do(scrapperJob)
+    schedule.every(1).minutes.do(scrapperJob)
     schedule.every(12).hours.do(scrapperJob)
 
     # Keep the scheduled tasks running in the background
@@ -123,6 +149,9 @@ def start_scheduler():
         schedule.run_pending()
         time.sleep(15)
 
+
+docs.register(GetAll)
+docs.register(ById)
 # ---------------------
 if __name__ == '__main__':
     # Start the scheduler in a separate process

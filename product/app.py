@@ -13,6 +13,7 @@ from flask_apispec import marshal_with, doc, use_kwargs
 # injection script in the user’s browser or the in the api request.
 from markupsafe import escape
 from datetime import datetime 
+import datetime as JWT_TIME
 
 # Flask-Limiter or Flask-RateLimiter. These libraries provide 
 # easy-to-use decorators that can be used to limit the number 
@@ -31,20 +32,53 @@ from api_main import APIMain
 import schedule
 import asyncio
 import time
+
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import JWTManager
+
+from cryptography.hazmat.primitives import serialization
+
 app = Flask(__name__)
+
+# Install OpenSSH and get a new ssh key with ssh-keygen -t rsa
+
+private_key = open('../.ssh/id_rsa', 'r').read()
+print(private_key)
+prKey = serialization.load_ssh_private_key(private_key.encode(), password=b'teste')
+
+public_key = open('../.ssh/id_rsa.pub', 'r').read()
+pubKey = serialization.load_ssh_public_key(public_key.encode())
+
+
+app.config["JWT_PRIVATE_KEY"] = prKey
+app.config["JWT_PUBLIC_KEY"] = pubKey
+app.config['JWT_ALGORITHM'] = 'RS256'
+
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = JWT_TIME.timedelta(minutes=30)
+
+key = "b96e9a4a-fd76-4a03-8080-ea53e264001a"
+
+jwt = JWTManager(app)
+
 limiter = Limiter(app)
 date_format = "%Y-%m-%d"
 
 api = Api(app)
-app.config.update({
-    'APISPEC_SPEC': APISpec(
+spec = APISpec(
         title='Bap',
         version='v1',
         plugins=[MarshmallowPlugin()],
-        openapi_version='2.0.0'
-    ),
-    'APISPEC_SWAGGER_URL': '/swagger',
-    'APISPEC_SWAGGER_UI_URL': '/swagger-ui',
+        openapi_version='2.0.0')
+
+api_key_scheme = {"type": "apiKey", "in": "header", "name": "X-API-Key"}
+spec.components.security_scheme("ApiKeyAuth", api_key_scheme)
+
+app.config.update({
+    'APISPEC_SPEC': spec,
+    'APISPEC_SWAGGER_URL': '/swagger/',  # URI to access API Doc JSON
+    'APISPEC_SWAGGER_UI_URL': '/swagger-ui/'  # URI to access UI of API Doc
 })
 docs = FlaskApiSpec(app)
 
@@ -54,34 +88,45 @@ category_service = CategoryService()
 category_service = CategoryDecorator(category_service)
 api_helper = APIMain(message_service)
 
-BapResponseSchema = Schema.from_dict(
-    {"category": fields.Str(), "description": fields.Str(), "published_at": fields.DateTime(), "source": fields.Str(), "title": fields.Str()}
-)
+# BapResponseSchema = Schema.from_dict(
+#     {"category": fields.Str(), "description": fields.Str(), "published_at": fields.DateTime(), "source": fields.Str(), "title": fields.Str()}
+# )
 
 
-class BapRequestSchema(Schema):
-    message_id = fields.Integer(metadata={"places":0})
+# class BapRequestSchema(Schema):
+#     message_id = fields.Integer(metadata={"places":0})
 
-@api.resource('/get_all')
-class GetAll(MethodResource, Resource):
-    @doc(description='Get All', tags=['GetAll'])
-    @marshal_with(BapResponseSchema())  # marshalling
-    
-    def get(self):
-        messages = message_service.get_all_messages()
-        return jsonify(messages)
+# class APIKEYRequestSchema(Schema):
+#     api_key = fields.String(metadata={"places":0})
 
-@api.resource('/by_id')
-class ById(MethodResource, Resource):
-    @doc(description='Post By Id.', tags=['ById'])
-    @use_kwargs(BapRequestSchema, location=('json'))
-    @marshal_with(BapRequestSchema)
-    def post(self, **kwargs):
-        return api_helper.get_by_id(request=request)
+
+@app.route('/authorization', methods=['POST'])
+def login():
+        keyx = request.json.get("api_key", None)
+        if keyx != key:
+            return jsonify({"msg": "ApiKey Incorreta"}), 401
+
+        access_token = create_access_token(identity=keyx)
+
+        return jsonify(access_token=access_token)
+
+@app.route('/all', methods=['GET'])
+@limiter.limit("5 per minute")
+@jwt_required()
+def get_all():
+    messages = message_service.get_all_messages()
+    return jsonify(messages)
+
+@app.route('/by_id', methods=['POST'])
+@jwt_required()
+def get_by_id():
+    return api_helper.get_by_id(request=request)
 
 @app.route('/by_category', methods=['POST'])
+@jwt_required()
 def get_by_category():
     return api_helper.get_by_category(request=request)
+
 
 @app.route('/between_date', methods=['POST'])
 def get_between_date():
@@ -141,7 +186,7 @@ def scrapperJob():
     asyncio.run(do_scrapp())
 
 def start_scheduler():
-    schedule.every(1).minutes.do(scrapperJob)
+    #schedule.every(1).minutes.do(scrapperJob)
     schedule.every(12).hours.do(scrapperJob)
 
     # Keep the scheduled tasks running in the background
@@ -150,8 +195,6 @@ def start_scheduler():
         time.sleep(15)
 
 
-docs.register(GetAll)
-docs.register(ById)
 # ---------------------
 if __name__ == '__main__':
     # Start the scheduler in a separate process
@@ -159,7 +202,7 @@ if __name__ == '__main__':
     scheduler.start()
 
     # Start the Flask web server
-    app.run(debug=False, use_reloader=False)
+    app.run(debug=False, use_reloader=False, port=3500)
 
     # Terminate the scheduler process when the Flask app is stopped
     scheduler.terminate()

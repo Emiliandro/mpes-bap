@@ -186,7 +186,7 @@ def scrapperJob():
     asyncio.run(do_scrapp())
 
 def start_scheduler():
-    schedule.every(1).minutes.do(scrapperJob)
+    #schedule.every(1).minutes.do(scrapperJob)
     schedule.every(12).hours.do(scrapperJob)
 
     # Keep the scheduled tasks running in the background

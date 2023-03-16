@@ -33,10 +33,10 @@ import schedule
 import asyncio
 import time
 
-from flask_jwt_extended import create_access_token
-from flask_jwt_extended import get_jwt_identity
-from flask_jwt_extended import jwt_required
-from flask_jwt_extended import JWTManager
+#from flask_jwt_extended import create_access_token
+#from flask_jwt_extended import get_jwt_identity
+#from flask_jwt_extended import jwt_required
+#from flask_jwt_extended import JWTManager
 
 from cryptography.hazmat.primitives import serialization
 
@@ -44,12 +44,9 @@ app = Flask(__name__)
 
 # Install OpenSSH and get a new ssh key with ssh-keygen -t rsa
 
-app.config['JWT_ALGORITHM'] = 'RS256'
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = JWT_TIME.timedelta(minutes=30)
-
 key = "b96e9a4a-fd76-4a03-8080-ea53e264001a"
 
-jwt = JWTManager(app)
+#jwt = JWTManager(app)
 
 limiter = Limiter(app)
 date_format = "%Y-%m-%d"
@@ -89,30 +86,27 @@ api_helper = APIMain(message_service)
 #     api_key = fields.String(metadata={"places":0})
 
 
-@app.route('/authorization', methods=['POST'])
-def login():
-        keyx = request.json.get("api_key", None)
-        if keyx != key:
-            return jsonify({"msg": "ApiKey Incorreta"}), 401
-
-        access_token = create_access_token(identity=keyx)
-
-        return jsonify(access_token=access_token)
+#@app.route('/authorization', methods=['POST'])
+#def login():
+#        keyx = request.json.get("api_key", None)
+#        if keyx != key:
+#            return jsonify({"msg": "ApiKey Incorreta"}), 401
+#
+#        access_token = create_access_token(identity=keyx)
+#
+#        return jsonify(access_token=access_token)
 
 @app.route('/all', methods=['GET'])
 @limiter.limit("5 per minute")
-@jwt_required()
 def get_all():
     messages = message_service.get_all_messages()
     return jsonify(messages)
 
 @app.route('/by_id', methods=['POST'])
-@jwt_required()
 def get_by_id():
     return api_helper.get_by_id(request=request)
 
 @app.route('/by_category', methods=['POST'])
-@jwt_required()
 def get_by_category():
     return api_helper.get_by_category(request=request)
 

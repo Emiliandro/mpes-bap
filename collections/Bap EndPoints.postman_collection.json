@@ -8,40 +8,192 @@
 		{
 			"name": "Authorization",
 			"request": {
-				"method": "GET",
-				"header": []
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"api_key\" : \"b96e9a4a-fd76-4a03-8080-ea53e264001a\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:3500/authorization",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3500",
+					"path": [
+						"authorization"
+					]
+				}
 			},
 			"response": []
 		},
 		{
 			"name": "All messages",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY3ODk5ODgzNywianRpIjoiZTgzOTgwODEtY2RlZi00ZDQ1LWE4ZDQtNWJkMmY2ZTNiYzVhIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImI5NmU5YTRhLWZkNzYtNGEwMy04MDgwLWVhNTNlMjY0MDAxYSIsIm5iZiI6MTY3ODk5ODgzNywiZXhwIjoxNjc5MDAwNjM3fQ.3FSZNSCDkDqeTMTlbaFcadgS41dz7-7KGfjdpH8NhFRyXhvy-I5_dgbwtOF1mrRHWg2lkvBfhc4bBtQ7q2msCr1vNdiEUlZMAc_FNKNCbiWsLLEQF7SwTfK-bovTtnFld0rGn4wbzOV2o7cAjz2fn6P7C9unWEhgszk4KflgDoQ98XIEqiHaX8HQIbIr8gn1hNuNug1aqbdZRrC8f2GxhZwGO1WFvyQAg6c7QWaHUj8cpeCVNb6DN6zIBkn-Z9A1ueXje2U8RcYD3qLAcK5AOWf6x8mRkeY0Pp3Acr-HWlc_YCujVONvgOr_EAmJ5do5GA7iRR_V5aXbt3keyTvfVLosaROoo1I3RkPaX0CobQKJhXvPJ3EJ0qPrM9hHImradGBxw3K3jNML4VeOmpuwmfRuoNcm5zpmMuYYoRvRQoQCL-j1Q3iGn-fvgVvEyvJ_y7bRpahpJG66oR5TCXbizxR2OBCjhidGcPnKaVNdn-eFO961w4c49MSjOKtl3O_-",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
-				"header": []
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:3500/all",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3500",
+					"path": [
+						"all"
+					]
+				}
 			},
 			"response": []
 		},
 		{
 			"name": "Get all categories",
 			"request": {
-				"method": "GET",
-				"header": []
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY3ODk5ODgzNywianRpIjoiZTgzOTgwODEtY2RlZi00ZDQ1LWE4ZDQtNWJkMmY2ZTNiYzVhIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImI5NmU5YTRhLWZkNzYtNGEwMy04MDgwLWVhNTNlMjY0MDAxYSIsIm5iZiI6MTY3ODk5ODgzNywiZXhwIjoxNjc5MDAwNjM3fQ.3FSZNSCDkDqeTMTlbaFcadgS41dz7-7KGfjdpH8NhFRyXhvy-I5_dgbwtOF1mrRHWg2lkvBfhc4bBtQ7q2msCr1vNdiEUlZMAc_FNKNCbiWsLLEQF7SwTfK-bovTtnFld0rGn4wbzOV2o7cAjz2fn6P7C9unWEhgszk4KflgDoQ98XIEqiHaX8HQIbIr8gn1hNuNug1aqbdZRrC8f2GxhZwGO1WFvyQAg6c7QWaHUj8cpeCVNb6DN6zIBkn-Z9A1ueXje2U8RcYD3qLAcK5AOWf6x8mRkeY0Pp3Acr-HWlc_YCujVONvgOr_EAmJ5do5GA7iRR_V5aXbt3keyTvfVLosaROoo1I3RkPaX0CobQKJhXvPJ3EJ0qPrM9hHImradGBxw3K3jNML4VeOmpuwmfRuoNcm5zpmMuYYoRvRQoQCL-j1Q3iGn-fvgVvEyvJ_y7bRpahpJG66oR5TCXbizxR2OBCjhidGcPnKaVNdn-eFO961w4c49MSjOKtl3O_-",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:3500/get_all_categories",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3500",
+					"path": [
+						"get_all_categories"
+					]
+				}
 			},
 			"response": []
 		},
 		{
 			"name": "Add category",
 			"request": {
-				"method": "GET",
-				"header": []
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY3ODk5ODgzNywianRpIjoiZTgzOTgwODEtY2RlZi00ZDQ1LWE4ZDQtNWJkMmY2ZTNiYzVhIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImI5NmU5YTRhLWZkNzYtNGEwMy04MDgwLWVhNTNlMjY0MDAxYSIsIm5iZiI6MTY3ODk5ODgzNywiZXhwIjoxNjc5MDAwNjM3fQ.3FSZNSCDkDqeTMTlbaFcadgS41dz7-7KGfjdpH8NhFRyXhvy-I5_dgbwtOF1mrRHWg2lkvBfhc4bBtQ7q2msCr1vNdiEUlZMAc_FNKNCbiWsLLEQF7SwTfK-bovTtnFld0rGn4wbzOV2o7cAjz2fn6P7C9unWEhgszk4KflgDoQ98XIEqiHaX8HQIbIr8gn1hNuNug1aqbdZRrC8f2GxhZwGO1WFvyQAg6c7QWaHUj8cpeCVNb6DN6zIBkn-Z9A1ueXje2U8RcYD3qLAcK5AOWf6x8mRkeY0Pp3Acr-HWlc_YCujVONvgOr_EAmJ5do5GA7iRR_V5aXbt3keyTvfVLosaROoo1I3RkPaX0CobQKJhXvPJ3EJ0qPrM9hHImradGBxw3K3jNML4VeOmpuwmfRuoNcm5zpmMuYYoRvRQoQCL-j1Q3iGn-fvgVvEyvJ_y7bRpahpJG66oR5TCXbizxR2OBCjhidGcPnKaVNdn-eFO961w4c49MSjOKtl3O_-",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"category\":\"nova_categoria_via_postman\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:3500/add_category",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3500",
+					"path": [
+						"add_category"
+					]
+				}
 			},
 			"response": []
 		},
 		{
 			"name": "Message by category",
 			"request": {
-				"method": "GET",
-				"header": []
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY3ODk5ODgzNywianRpIjoiZTgzOTgwODEtY2RlZi00ZDQ1LWE4ZDQtNWJkMmY2ZTNiYzVhIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImI5NmU5YTRhLWZkNzYtNGEwMy04MDgwLWVhNTNlMjY0MDAxYSIsIm5iZiI6MTY3ODk5ODgzNywiZXhwIjoxNjc5MDAwNjM3fQ.3FSZNSCDkDqeTMTlbaFcadgS41dz7-7KGfjdpH8NhFRyXhvy-I5_dgbwtOF1mrRHWg2lkvBfhc4bBtQ7q2msCr1vNdiEUlZMAc_FNKNCbiWsLLEQF7SwTfK-bovTtnFld0rGn4wbzOV2o7cAjz2fn6P7C9unWEhgszk4KflgDoQ98XIEqiHaX8HQIbIr8gn1hNuNug1aqbdZRrC8f2GxhZwGO1WFvyQAg6c7QWaHUj8cpeCVNb6DN6zIBkn-Z9A1ueXje2U8RcYD3qLAcK5AOWf6x8mRkeY0Pp3Acr-HWlc_YCujVONvgOr_EAmJ5do5GA7iRR_V5aXbt3keyTvfVLosaROoo1I3RkPaX0CobQKJhXvPJ3EJ0qPrM9hHImradGBxw3K3jNML4VeOmpuwmfRuoNcm5zpmMuYYoRvRQoQCL-j1Q3iGn-fvgVvEyvJ_y7bRpahpJG66oR5TCXbizxR2OBCjhidGcPnKaVNdn-eFO961w4c49MSjOKtl3O_-",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"category\":\"tecnologia\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:3500/by_category",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3500",
+					"path": [
+						"by_category"
+					]
+				}
 			},
 			"response": []
 		},
@@ -110,10 +262,10 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"from_date\":\"2023-01-01\",\n    \"until_date\":\"2023-05-05\"\n}"
+					"raw": "{\n    \"category\":\"tecnologia\",\n    \"from_date\":\"2023-01-01\",\n    \"until_date\":\"2023-05-05\"\n}"
 				},
 				"url": {
-					"raw": "http://127.0.0.1:3500/between_date",
+					"raw": "http://127.0.0.1:3500/category_between_date",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -123,7 +275,7 @@
 					],
 					"port": "3500",
 					"path": [
-						"between_date"
+						"category_between_date"
 					]
 				}
 			},

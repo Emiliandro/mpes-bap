@@ -44,18 +44,7 @@ app = Flask(__name__)
 
 # Install OpenSSH and get a new ssh key with ssh-keygen -t rsa
 
-private_key = open('../.ssh/id_rsa', 'r').read()
-print(private_key)
-prKey = serialization.load_ssh_private_key(private_key.encode(), password=b'teste')
-
-public_key = open('../.ssh/id_rsa.pub', 'r').read()
-pubKey = serialization.load_ssh_public_key(public_key.encode())
-
-
-app.config["JWT_PRIVATE_KEY"] = prKey
-app.config["JWT_PUBLIC_KEY"] = pubKey
 app.config['JWT_ALGORITHM'] = 'RS256'
-
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = JWT_TIME.timedelta(minutes=30)
 
 key = "b96e9a4a-fd76-4a03-8080-ea53e264001a"

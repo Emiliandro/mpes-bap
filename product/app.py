@@ -92,7 +92,6 @@ api_helper = APIMain(message_service)
 #     {"category": fields.Str(), "description": fields.Str(), "published_at": fields.DateTime(), "source": fields.Str(), "title": fields.Str()}
 # )
 
-
 # class BapRequestSchema(Schema):
 #     message_id = fields.Integer(metadata={"places":0})
 
@@ -129,27 +128,33 @@ def get_by_category():
 
 
 @app.route('/between_date', methods=['POST'])
+@jwt_required()
 def get_between_date():
     return api_helper.get_between_date(request=request)
 
 @app.route('/category_between_date', methods=['POST'])
+@jwt_required()
 def get_category_between_date():
     return api_helper.get_category_between_date(request=request)
 
 @app.route('/messages', methods=['POST'])
+@jwt_required()
 def add_message():
     return api_helper.add_message(request=request)
 
 @app.route('/messages/<int:message_id>', methods=['PUT'])
+@jwt_required()
 def update_message(message_id):
     return api_helper.update_message(request=request,message_id=message_id)
         
 @app.route('/messages/<int:message_id>', methods=['DELETE'])
+@jwt_required()
 def delete_message(message_id):
     response = message_service.delete_message(message_id)
     return f"Message {request.json['source']} deleted"
 
 @app.route('/add_category', methods=['POST'])
+@jwt_required()
 def add_category():
     category_name = escape(request.json['category'])
     return create_category(category_name=category_name)
@@ -159,6 +164,7 @@ def create_category(category_name):
     return f"Message {category_name} created"
 
 @app.route('/get_all_categories', methods=['POST'])
+@jwt_required()
 def get_all_categories():
     return jsonify(get_categories())
 

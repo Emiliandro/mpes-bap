@@ -17,10 +17,15 @@ $ .\env\Scripts\activate
 
 4. Then install the dependencies:
 ```
-$ (env) pip install -r requirements.txt
+$ (env)  pip install --no-cache-dir -r requirements.txt
 ```
 
-5. Finally start the web server:
+5. Create a SSH key with the file name bap_testing_ssh
+```
+ssh-keygen -t rsa 
+```
+
+6. Finally start the web server:
 ```
 $ (env) python app.py
 ```

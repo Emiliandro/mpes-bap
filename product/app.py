@@ -91,14 +91,26 @@ api_helper = APIMain(message_service)
 # BapResponseSchema = Schema.from_dict(
 #     {"category": fields.Str(), "description": fields.Str(), "published_at": fields.DateTime(), "source": fields.Str(), "title": fields.Str()}
 # )
+<<<<<<< HEAD
 
+=======
+>>>>>>> fd54fe88504a8d0257a2b41307b39ec0f766484d
 
+# class BapRequestSchema(Schema):
+#     message_id = fields.Integer(metadata={"places":0})
+
+<<<<<<< HEAD
+# class APIKEYRequestSchema(Schema):
+#     api_key = fields.String(metadata={"places":0})
+
+=======
 # class BapRequestSchema(Schema):
 #     message_id = fields.Integer(metadata={"places":0})
 
 # class APIKEYRequestSchema(Schema):
 #     api_key = fields.String(metadata={"places":0})
 
+>>>>>>> fd54fe88504a8d0257a2b41307b39ec0f766484d
 
 @app.route('/authorization', methods=['POST'])
 def login():
@@ -186,7 +198,7 @@ def scrapperJob():
     asyncio.run(do_scrapp())
 
 def start_scheduler():
-    schedule.every(1).minutes.do(scrapperJob)
+    #schedule.every(1).minutes.do(scrapperJob)
     schedule.every(12).hours.do(scrapperJob)
 
     # Keep the scheduled tasks running in the background

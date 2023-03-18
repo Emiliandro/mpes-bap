@@ -3,7 +3,7 @@ import datetime
 # using duckduckgo_search, because DuckDuckGo does not collect or share personal
 # information. That its privacy policy, it prevents search leakage by default.  
 # read more about it at https://duckduckgo.com/privacy
-from duckduckgo_search import ddg_suggestions, ddg
+from duckduckgo_search import ddg
 
 # escape function causes param to be rendered as text, preventing the execution of 
 # injection script in the user’s browser or the in the api request.

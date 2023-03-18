@@ -1,6 +1,9 @@
 from flask import Flask, jsonify, request
 from flask_swagger_ui import get_swaggerui_blueprint
 
+from flasgger import Swagger, swag_from
+from config.swagger import template, swagger_config
+
 from flask_restful import Resource, Api
 from apispec import APISpec
 from marshmallow import Schema, fields
@@ -44,20 +47,22 @@ app = Flask(__name__)
 
 # Install OpenSSH and get a new ssh key with ssh-keygen -t rsa
 
-private_key = open('../.ssh/id_rsa', 'r').read()
+private_key = open('./id_rsa', 'r').read()
 print(private_key)
 prKey = serialization.load_ssh_private_key(private_key.encode(), password=b'teste')
 
-public_key = open('../.ssh/id_rsa.pub', 'r').read()
+public_key = open('./id_rsa.pub', 'r').read()
 pubKey = serialization.load_ssh_public_key(public_key.encode())
-
 
 app.config["JWT_PRIVATE_KEY"] = prKey
 app.config["JWT_PUBLIC_KEY"] = pubKey
 app.config['JWT_ALGORITHM'] = 'RS256'
 
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = JWT_TIME.timedelta(minutes=30)
-
+app.config['SWAGGER'] = {
+    'title': 'BAP API',
+    'uiversion': 3
+}
 key = "b96e9a4a-fd76-4a03-8080-ea53e264001a"
 
 jwt = JWTManager(app)
@@ -81,6 +86,7 @@ app.config.update({
     'APISPEC_SWAGGER_UI_URL': '/swagger-ui/'  # URI to access UI of API Doc
 })
 docs = FlaskApiSpec(app)
+Swagger(app, config=swagger_config, template=template)
 
 message_service = MessageService()
 message_service = MessageDecorator(message_service)
@@ -100,6 +106,7 @@ api_helper = APIMain(message_service)
 
 
 @app.route('/authorization', methods=['POST'])
+@swag_from('./docs/authorization.yaml')
 def login():
         keyx = request.json.get("api_key", None)
         if keyx != key:
@@ -112,6 +119,7 @@ def login():
 @app.route('/all', methods=['GET'])
 @limiter.limit("5 per minute")
 @jwt_required()
+@swag_from('./docs/all.yaml')
 def get_all():
     messages = message_service.get_all_messages()
     return jsonify(messages)

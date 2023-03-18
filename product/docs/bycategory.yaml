@@ -1,0 +1,29 @@
+Get News by Category
+---
+tags:
+  - Filter
+parameters:
+  - in: header
+    name: Authorization
+    required: true
+  - name: body
+    description: The body should contain category name
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - "category"
+      properties:
+        category:
+          type: "string"
+          example: "auto"
+responses:
+  201:
+    description: When Category Name is correct
+
+  400:
+    description: Fails to retrieve news
+
+  405:
+    description: HTTP is not allowed

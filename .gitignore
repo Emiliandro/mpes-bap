@@ -4,6 +4,8 @@ scraping/node_modules/
 __pycache__/
 *.py[cod]
 
+.ssh/
+
 # C extensions
 *.so
 

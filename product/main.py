@@ -126,11 +126,13 @@ def get_all():
 
 @app.route('/by_id', methods=['POST'])
 @jwt_required()
+@swag_from('./docs/byid.yaml')
 def get_by_id():
     return api_helper.get_by_id(request=request)
 
 @app.route('/by_category', methods=['POST'])
 @jwt_required()
+@swag_from('./docs/bycategory.yaml')
 def get_by_category():
     return api_helper.get_by_category(request=request)
 

@@ -21,3 +21,6 @@ responses:
 
   400:
     description: Fails to retrieve key
+
+  405:
+    description: HTTP is not allowed

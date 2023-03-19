@@ -145,6 +145,7 @@ def get_between_date():
 
 @app.route('/category_between_date', methods=['POST'])
 @jwt_required()
+@swag_from('')
 def get_category_between_date():
     return api_helper.get_category_between_date(request=request)
 

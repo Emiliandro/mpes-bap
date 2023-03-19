@@ -20,6 +20,11 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        service_account: 'bapdeploy@bapfornexto.iam.gserviceaccount.com'
+        
     - name: Checkout
       uses: actions/checkout@v2
 

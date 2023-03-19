@@ -139,6 +139,7 @@ def get_by_category():
 
 @app.route('/between_date', methods=['POST'])
 @jwt_required()
+@swag_from('./docs/betweendate.yaml')
 def get_between_date():
     return api_helper.get_between_date(request=request)
 

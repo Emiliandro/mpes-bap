@@ -13,11 +13,15 @@ parameters:
     schema:
       type: object
       required:
-        - "category"
+        - "from_date"
+        - "until_date"
       properties:
-        category:
+        from_date:
           type: "string"
-          example: "auto"
+          example: "Y-m-d"
+        until_date:
+          type: "string"
+          example: "Y-m-d"
 responses:
   201:
     description: When Category Name is correct
